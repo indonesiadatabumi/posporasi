@@ -1,0 +1,9 @@
+.form-control,
+.form-select {
+	border-color: var(--app-component-border-color);
+}
+.form-select:not([multiple]) {
+	& option {
+		color: var(--app-component-color);
+	}
+}

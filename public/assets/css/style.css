@@ -1,0 +1,119 @@
+.cart-item-image {
+    width: 100%; /* Menjadikan lebar gambar 100% dari elemen induknya */
+    max-width: 75px; /* Menjaga lebar maksimal 75px */
+    height: auto; /* Mempertahankan rasio aspek */
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.cart-sidebar {
+    width: 300px;  /* Tentukan lebar sidebar */
+    z-index: 1000;  
+    transition: all 0.3s ease;  
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);  
+    padding-bottom: 20px;  
+    top: 60px; /* Sesuaikan ini sesuai tinggi navbar */
+    right: 0;  
+    height: calc(100vh - 60px); /* Mengurangi tinggi navbar */
+    position: fixed; /* Memastikan posisi tetap */
+}
+
+.cart-sidebar h2 {
+    border-bottom: 2px solid #e2e8f0;  
+    margin-bottom: 10px;  
+}
+
+.cart-sidebar input {
+    border-radius: 5px;  
+}
+
+.cart-sidebar button {
+    cursor: pointer;  
+}
+
+#cart-items {
+    height: 200px;  
+    overflow-y: auto;  
+}
+
+.product {
+    transition: transform 0.2s; 
+}
+
+.product:hover {
+    transform: scale(1.05); 
+}
+
+/* Menambahkan CSS untuk grid produk */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 kolom */
+    gap: 20px; /* Jarak antar produk */
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 1200px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 kolom untuk layar di bawah 1200px */
+    }
+}
+
+@media (max-width: 800px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 kolom untuk layar di bawah 800px */
+    }
+}
+
+@media (max-width: 500px) {
+    .grid {
+        grid-template-columns: 1fr; /* 1 kolom untuk layar di bawah 500px */
+    }
+}
+
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Jarak antar produk */
+}
+
+.product {
+    flex: 1 1 calc(25% - 20px); /* Ukuran kolom produk */
+    box-sizing: border-box;
+    border: 1px solid #ddd; /* Border untuk produk */
+    border-radius: 8px; /* Sudut melengkung */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Bayangan */
+    background-color: #fff; /* Latar belakang produk */
+    transition: transform 0.2s; /* Transisi saat hover */
+    max-height: 350px; /* Membatasi tinggi maksimum kartu */
+    overflow: hidden; /* Menyembunyikan bagian yang berlebihan */
+}
+
+.product img {
+    width: 180px; /* Lebar tetap */
+    height: 180px; /* Tinggi tetap */
+    object-fit: cover; /* Memotong gambar agar sesuai dengan ukuran */
+    border-top-left-radius: 8px; /* Radius sudut atas */
+    border-top-right-radius: 8px; /* Radius sudut atas */
+}
+
+.product h2 {
+    font-size: 1.25rem; /* Ukuran font judul */
+    margin: 10px 0 5px; /* Jarak margin judul */
+}
+
+.product p {
+    font-size: 0.875rem; /* Ukuran font deskripsi dan harga */
+}
+
+/* Responsif untuk produk */
+@media (max-width: 768px) {
+    .product {
+        flex: 1 1 calc(50% - 20px); /* Menjadi 2 kolom di tablet */
+    }
+}
+
+@media (max-width: 480px) {
+    .product {
+        flex: 1 1 calc(100% - 20px); /* Menjadi 1 kolom di ponsel */
+    }
+}

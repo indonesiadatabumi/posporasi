@@ -1,0 +1,63 @@
+.custom-card {
+    height: 100%; /* Menjaga tinggi card tetap konsisten */
+}
+
+.card-img-top {
+    object-fit: cover; /* Menyesuaikan gambar agar tetap proporsional */
+    height: 150px; /* Atur tinggi gambar */
+}
+
+.sidebar {
+    width: 100px; /* Atur lebar sidebar */
+    height: 100vh; /* Atur tinggi agar menutupi seluruh tinggi viewport */
+    background-color: #f8f9fa; /* Warna latar belakang */
+    overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi */
+    padding: 20px; /* Tambahkan padding */
+}
+
+.menu-item {
+    margin-bottom: 15px; /* Jarak antar item menu */
+}
+
+.cart {
+    position: sticky; /* Atur posisi sticky */
+    top: 20px; /* Jarak dari atas halaman */
+    height: calc(100vh - 100px); /* Sesuaikan tinggi keranjang */
+    overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi */
+    background-color: #ffffff; /* Warna latar belakang putih */
+    border: 1px solid #ccc; /* Garis batas */
+    border-radius: 5px; /* Sudut membulat */
+    display: flex;
+    flex-direction: column; /* Mengatur layout vertikal */
+    opacity: 1; /* Pastikan opasitas penuh */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Bayangan halus */
+}
+
+.cart-summary {
+    margin-top: auto; /* Memastikan ringkasan berada di bagian bawah */
+    border-top: 1px solid #dee2e6; /* Garis pemisah */
+    padding-top: 1rem; /* Jarak atas untuk ringkasan */
+}
+
+/* Menyesuaikan ukuran kategori */
+.sticky-navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Pastikan semua item memiliki lebar yang sama */
+}
+
+/* Menyesuaikan tampilan produk */
+.product {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Memastikan semua produk memiliki tinggi yang sama */
+}
+
+/* Menyesuaikan card agar responsif */
+.custom-card {
+    flex-grow: 1; /* Memungkinkan card untuk tumbuh */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Menyesuaikan tampilan keranjang */

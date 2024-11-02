@@ -1,0 +1,135 @@
+.custom-card {
+    height: 100%; /* Menjaga tinggi card tetap konsisten */
+}
+
+.card-img-top {
+    object-fit: cover; /* Menyesuaikan gambar agar tetap proporsional */
+    height: 150px; /* Atur tinggi gambar */
+}
+.sidebar {
+    width: 100px; /* Atur lebar sidebar */
+    height: 100vh; /* Atur tinggi agar menutupi seluruh tinggi viewport */
+    background-color: #f8f9fa; /* Warna latar belakang */
+    overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi */
+    padding: 20px; /* Tambahkan padding */
+    scrollbar-color: transparant transparant;
+}
+
+.menu-item {
+    margin-bottom: 15px; /* Jarak antar item menu */
+}
+
+.cart {
+    position: sticky; /* Atur posisi sticky */
+    top: 20px; /* Jarak dari atas halaman */
+    height: calc(100vh - 100px); /* Sesuaikan tinggi keranjang */
+    overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi */
+    background-color: white; /* Warna latar belakang */
+    border: 1px solid #ccc; /* Garis batas */
+    border-radius: 5px; /* Sudut membulat */
+    display: flex;
+    flex-direction: column; /* Mengatur layout vertikal */
+    scrollbar-color: transparant transparant;
+}
+
+.cart::-webkit-scrollbar{
+    display: none;
+}
+
+.cart-summary {
+    margin-top: auto; /* Memastikan ringkasan berada di bagian bawah */
+}
+
+/* Menyesuaikan ukuran kategori */
+.sticky-navbar {
+    text-align: center; /* Mengatur teks di tengah */
+}
+
+.sticky-navbar .nav-link {
+    width: 100%; /* Mengatur lebar tombol agar 100% dari kontainer */
+    text-align: center; /* Mengatur teks di tengah pada tombol */
+}
+
+
+/* Menyesuaikan tampilan produk */
+.product {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Memastikan semua produk memiliki tinggi yang sama */
+}
+
+/* Menyesuaikan card agar responsif */
+.custom-card {
+    flex-grow: 1; /* Memungkinkan card untuk tumbuh */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Menyesuaikan tampilan keranjang */
+  
+#pay-btn {
+    font-size: 0.7rem; /* Ukuran font lebih besar */
+    padding: 0.7rem; /* Padding tombol lebih besar */
+    border-radius: 0.4rem; /* Bulatkan sudut tombol */
+    width: 100%; /* Pastikan tombol menggunakan lebar penuh */
+}
+#checkout-btn {
+    font-size: 0.7rem; /* Ukuran font lebih besar */
+    padding: 0.7rem; /* Padding tombol lebih besar */
+    border-radius: 0.4rem; /* Bulatkan sudut tombol */
+    width: 100%; /* Pastikan tombol menggunakan lebar penuh */
+}
+
+.product .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product .card-img-top {
+    object-fit: cover;
+    height: 200px;
+    width: 100%;
+}
+
+.product .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product .card-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.product .card-text {
+    font-size: 0.9rem;
+    flex-grow: 1;
+    margin-bottom: 15px;
+}
+
+.add-to-cart, #checkout-btn {
+    font-size: 1rem; /* Ukuran huruf tombol */
+}
+#pay-btn {
+    font-size: 1rem; /* Ukuran huruf tombol */
+}
+
+.add-to-cart {
+    margin-top: 10px;
+}
+
+.cart-item {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.overflow-auto::-webkit-scrollbar {
+    width: 8px; /* Lebar scrollbar */
+}
+.overflow-auto {
+    scrollbar-color: transparant transparant;
+}

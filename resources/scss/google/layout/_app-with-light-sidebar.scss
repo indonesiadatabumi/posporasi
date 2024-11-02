@@ -1,0 +1,199 @@
+html:not(.dark-mode) {
+.app-with-light-sidebar {
+	& .app-sidebar {
+		background: $white;
+		
+		@if $enable-rtl {
+			border-left: 1px solid var(--app-component-border-color-transparent);
+		} @else {
+			border-right: 1px solid var(--app-component-border-color-transparent);
+		}
+		& .menu {
+			& .menu-profile {
+				& .menu-profile-cover {
+					&.with-shadow {
+						&:before {
+							background: none;
+						}
+					}
+				}
+				& .menu-profile-info {
+					color: $body-color;
+					
+					& small {
+						color: $body-color;
+					}
+				}
+			}
+			& .menu-header {
+				color: $gray-700;
+			}
+			& .menu-divider {
+				background: $gray-300;
+			}
+			& .menu-search {
+				& .form-control {
+					background: none;
+					border: none;
+					padding-left: 0;
+					padding-right: 0;
+					border-bottom: 1px solid $border-color;
+					color: $dark;
+					border-radius: 0;
+				
+					&:focus {
+						border-color: darken($border-color, 15%);
+						box-shadow: none;
+					}
+				}
+			}
+			& .menu-item {
+				& > .menu-link {
+					color: $gray-900;
+					
+					& .menu-badge,
+					& .menu-label {
+						color: shade-color($primary,10%);
+						background: tint-color($primary, 75%);
+						font-weight: $font-weight-bolder;
+					}
+					&:hover,
+					&:focus {
+						color: $gray-900;
+						background: $light;
+					}
+				}
+				&.active {
+					&:not(.has-sub) {
+						& > .menu-link {
+							color: shade-color($primary, 15%);
+							background: tint-color($primary, 85%);
+							font-weight: $font-weight-bold;
+							
+							& .menu-icon {
+								color: inherit;
+							}
+							& .menu-caret {
+								color: $gray-500;
+							}
+							& .menu-badge,
+							& .menu-label {
+								background: $primary;
+								color: $white;
+							}
+						}
+					}
+				}
+			}
+			& .app-sidebar-minify-btn {
+				background: $gray-200;
+				color: $gray-500;
+			
+				& i {
+					color: $gray-500;
+				}
+			
+				&:hover,
+				&:focus {
+					background: $gray-400;
+					color: $gray-700;
+					
+					& i {
+						color: $gray-700;
+					}
+				}
+			}
+		}
+		&.app-sidebar-end {
+			@if $enable-rtl {
+				border-right: 1px solid rgba(var(--app-component-border-color-rgb), .5);
+			} @else {
+				border-left: 1px solid rgba(var(--app-component-border-color-rgb), .5);
+			}
+		}
+	}
+	& .app-sidebar-bg {
+		background: $white;
+	}
+	& .slimScrollDiv {
+		& .slimScrollBar {
+			background: $black !important;
+		}
+	}
+	& .app-sidebar-float-submenu-container {
+		background: $white;
+		border: 1px solid rgba(var(--app-component-border-color-rgb), .5);
+		
+		& .app-sidebar-float-submenu-arrow,
+		& .app-sidebar-float-submenu-line {
+			background: $gray-200;
+		}
+		& .app-sidebar-float-submenu {
+			& .menu-item {
+				& > .menu-link {
+					color: $gray-900;
+					
+					&:hover,
+					&:focus {
+						color: $primary;
+					}
+					&:after {
+						background: $gray-200;
+					}
+				}
+				&:before {
+					background: $gray-200;
+				}
+				&:after {
+					background: $gray-100;
+					border-color: $gray-200;
+					border-width: 2px;
+				}
+				&.active,
+				&.expand,
+				&.expanding {
+					& > .menu-link {
+						color: $primary;
+					}
+					&:after {
+						border-color: $primary;
+					}
+				}
+			}
+		}
+	}
+	&.app-sidebar-minified {
+		& .app-sidebar {
+			& .menu {
+				& > .menu-item {
+					&.active {
+						& .menu-link {
+							color: shade-color($primary, 15%) !important;
+							background: tint-color($primary, 85%) !important;
+							
+							& .menu-caret {
+								color: inherit !important;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	&.app-gradient-enabled {
+		& .app-sidebar {
+			& .menu {
+				& > .menu-item {
+					&.active {
+						& > .menu-link {
+							color: var(--app-theme-color);
+							background-color: var(--app-theme);
+							background-image: var(--bs-gradient);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+}

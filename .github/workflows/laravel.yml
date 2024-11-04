@@ -1,0 +1,39 @@
+name: Laravel
+
+on:
+  pull_request:
+    branches: [ "development" ]
+
+jobs:
+  laravel-tests:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Generate key
+      run: php artisan key:generate
+    - name: Migrate seed
+      run: php artisan migrate --seed
+    - name: Cache Clear
+      run: php artisan cache:clear
+    - name: Config Clear
+      run: php artisan config:clear
+    - name: Storage Link
+      run: php artisan storage:link
+    - name: Chown Deployer
+      run: chown -R deployer:www-data /var/www/posporasi
+    - name: 664 Permission
+      run: find /var/www/posporasi -type f -exec chmod 664 {} \;
+    - name: 775 Permission
+      run: find /var/www/posporasi -type d -exec chmod 775 {} \;
+    - name: Bootstrap Cache
+      run: chgrp -R www-data storage bootstrap/cache
+    - name: Bootstrap Cache 2
+      run: chmod -R ug+rwx storage bootstrap/cache
+    - name: Deploy
+      run: php artisan queue:restart

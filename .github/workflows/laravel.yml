@@ -1,8 +1,8 @@
 name: Posporasi
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
+    branches: [ "development" ]
 
 jobs:
   laravel-tests:

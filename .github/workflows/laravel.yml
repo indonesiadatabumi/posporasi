@@ -16,7 +16,7 @@ jobs:
     - name: Switch User
       run: su deployer
     - name: Install Dependencies
-      run: composer install
+      run: COMPOSER_ALLOW_SUPERUSER=1 composer install
     - name: Generate key
       run: php artisan key:generate
     - name: Migrate seed

@@ -5,7 +5,7 @@
     'appContentClass' => 'p-0'
 ])
 
-@section('title', 'Login Page Edited')
+@section('title', 'Login Page')
 
 @section('content')
     <!-- BEGIN login -->
@@ -22,7 +22,7 @@
             <div class="login-header">
                 <div class="brand">
                     <div class="d-flex align-items-center">
-                        <span class="logo"></span> <b>POS</b> DBI TESTING
+                        <span class="logo"></span> <b>POS</b> DBI
                     </div>
                     <small>Solusi transaksi dan operasional bisnis efisien.</small>
                 </div>  

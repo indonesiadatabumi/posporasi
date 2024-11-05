@@ -13,19 +13,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         port: ${{ secrets.PORT }}
         key: ${{ secrets.PRIVATE_KEY }}
-        script: |
-          cd /var/www/posporasi
-          git pull origin development
-          COMPOSER_ALLOW_SUPERUSER=1 composer install
-          php artisan key:generate
-          php artisan migrate --seed
-          php artisan cache:clear
-          php artisan config:clear
-          php artisan storage:link
-          chown -R deployer:www-data /var/www/posporasi
-          find /var/www/posporasi -type f -exec chmod 664 {} \;
-          find /var/www/posporasi -type d -exec chmod 775 {} \;
-          chgrp -R www-data storage bootstrap/cache
-          chmod -R ug+rwx storage bootstrap/cache
-          php artisan optimize:clear
-          php artisan queue:restart
+        script: "cd /var/www/posporasi && ./deploy.sh"

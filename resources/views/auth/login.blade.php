@@ -5,7 +5,7 @@
     'appContentClass' => 'p-0'
 ])
 
-@section('title', 'Login Page')
+@section('title', 'Login Page Edited')
 
 @section('content')
     <!-- BEGIN login -->

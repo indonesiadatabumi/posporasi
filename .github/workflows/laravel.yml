@@ -13,8 +13,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Switch User
-      run: su deployer
     - name: Install Dependencies
       run: COMPOSER_ALLOW_SUPERUSER=1 composer install
     - name: Generate key

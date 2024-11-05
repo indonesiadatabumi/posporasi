@@ -3,37 +3,29 @@ name: Posporasi
 on:
   push:
     branches: [ "development" ]
-
 jobs:
   laravel-tests:
-
     runs-on: self-hosted
-
     steps:
     - uses: actions/checkout@v4
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Install Dependencies
-      run: COMPOSER_ALLOW_SUPERUSER=1 composer install
-    - name: Generate key
-      run: php artisan key:generate
-    - name: Migrate seed
-      run: php artisan migrate --seed
-    - name: Cache Clear
-      run: php artisan cache:clear
-    - name: Config Clear
-      run: php artisan config:clear
-    - name: Storage Link
-      run: php artisan storage:link
-    - name: Chown Deployer
-      run: chown -R deployer:www-data /var/www/posporasi
-    - name: 664 Permission
-      run: find /var/www/posporasi -type f -exec chmod 664 {} \;
-    - name: 775 Permission
-      run: find /var/www/posporasi -type d -exec chmod 775 {} \;
-    - name: Bootstrap Cache
-      run: chgrp -R www-data storage bootstrap/cache
-    - name: Bootstrap Cache 2
-      run: chmod -R ug+rwx storage bootstrap/cache
-    - name: Deploy
-      run: php artisan queue:restart
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        script: |
+          cd /var/www/posporasi
+          git pull origin development
+          COMPOSER_ALLOW_SUPERUSER=1 composer install
+          php artisan key:generate
+          php artisan migrate --seed
+          php artisan cache:clear
+          php artisan config:clear
+          php artisan storage:link
+          chown -R deployer:www-data /var/www/posporasi
+          find /var/www/posporasi -type f -exec chmod 664 {} \;
+          find /var/www/posporasi -type d -exec chmod 775 {} \;
+          chgrp -R www-data storage bootstrap/cache
+          chmod -R ug+rwx storage bootstrap/cache
+          php artisan optimize:clear
+          php artisan queue:restart

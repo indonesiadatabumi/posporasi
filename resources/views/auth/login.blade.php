@@ -22,7 +22,7 @@
             <div class="login-header">
                 <div class="brand">
                     <div class="d-flex align-items-center">
-                        <span class="logo"></span> <b>POS</b> DBI
+                        <span class="logo"></span> <b>POS</b> DBI TESTING
                     </div>
                     <small>Solusi transaksi dan operasional bisnis efisien.</small>
                 </div>  

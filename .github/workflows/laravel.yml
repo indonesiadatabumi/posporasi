@@ -1,0 +1,16 @@
+name: Posporasi
+
+on:
+  push:
+    branches: [ "development" ]
+jobs:
+  laravel-tests:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        script: "cd /var/www/posporasi && ./deploy.sh"

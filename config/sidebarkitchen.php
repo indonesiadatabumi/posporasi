@@ -22,7 +22,7 @@ return [
 	],[
 		'icon' => 'fa fa-utensils',
 		'title' => 'POS System',
-		'url' => '/pembelian',
+		'url' => '/kitchenorder',
 	],[
 	'icon' => 'fa fa-database',
 		'title' => 'MASTER',
@@ -41,36 +41,7 @@ return [
 			'title' => 'Meja',
 			'route-name' => 'index'
 		]]
-
-	],[
-	'icon' => 'fa fa-money-bill',
-		'title' => 'TRANSAKSI',
-		'url' => 'javascript:;',
-		'caret' => true,
-		'sub_menu' => [[
-			'url' => '/lpembayaran',
-			'title' => 'Laporan Pembayaran',
-			'route-name' => '/lpembayaran	'
-		],[
-			'url' => '/pemasukan',
-			'title' => 'Laporan Pemasukan',
-			'route-name' => '/pemasukan'
-		],[
-			'url' => 'lpenjualan',
-			'title' => 'Laporan Penjualan',
-			'route-name' => 'lpenjualan'		
-		]]
 		
-	],[
-		'icon' => 'fa fa-users',
-			'title' => 'User',
-			'url' => '/users',
-			'route-name' => '/users'
-	],[
-		'icon' => 'fa fa-cog',
-			'title' => 'Resto',
-			'url' => '/resto',
-			'route-name' => '/resto'
 	],[
 		'icon' => 'fa fa-sign-out',
 			'title' => 'Logout',

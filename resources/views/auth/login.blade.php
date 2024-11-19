@@ -39,9 +39,12 @@
                         <input type="email" name="email" class="form-control fs-13px h-45px border-0" placeholder="Email Address" id="emailAddress" required />
                         <label for="emailAddress" class="d-flex align-items-center text-gray-600 fs-13px">Alamat Email</label>
                     </div>
-                    <div class="form-floating mb-20px">
-                        <input type="password" name="password" class="form-control fs-13px h-45px border-0" placeholder="Password" required />
+                    <div class="form-floating mb-20px position-relative">
+                        <input type="password" name="password" class="form-control fs-13px h-45px border-0" placeholder="Password" id="password" required />
                         <label for="password" class="d-flex align-items-center text-gray-600 fs-13px">Password</label>
+                        <button type="button" onclick="togglePasswordVisibility()" class="btn position-absolute end-0 top-50 translate-middle-y me-3 eye-toggle">
+                            <i id="togglePasswordIcon" class="fa fa-eye"></i>
+                        </button>
                     </div>
                     {{-- <div class="form-check mb-20px">
                         <input class="form-check-input border-0" type="checkbox" name="remember" value="1" id="rememberMe" />
@@ -68,4 +71,23 @@
 
 @push('scripts')
     <script src="/assets/js/demo/login-v2.demo.js"></script>
+    <script src="/assets/js/demo/login-v2.demo.js"></script>
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
 @endpush
+
+    

@@ -42,6 +42,7 @@
                         <tr>
                             <th class="text-center" style="width: 5%">No</th>
                             <th>Nama Kategori</th>
+                            <th>Icon</th> <!-- Tambahkan kolom Icon di sini -->
                             <th class="text-center" style="width: 15%">Aksi</th>
                         </tr>
                     </thead>
@@ -71,22 +72,33 @@
                 ajax: {
                     url: '{{ route('kategori.data') }}',
                 },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        searchable: false,
-                        sortable: false,
-                        className: 'text-center'
-                    },
-                    {
-                        data: 'nama_kategori'
-                    },
-                    {
-                        data: 'aksi',
-                        searchable: false,
-                        sortable: false,
-                        className: 'text-center'
-                    },
-                ]
+                columns: [
+    {
+        data: 'DT_RowIndex',
+        searchable: false,
+        sortable: false,
+        className: 'text-center'
+    },
+    {
+        data: 'nama_kategori'
+    },
+    {
+        data: 'icon', // Kolom icon
+        render: function(data, type, row) {
+            return data ? `<i class="${data}"></i>` : ''; // Menampilkan icon jika ada
+        },
+        className: 'text-center',
+        searchable: false,
+        sortable: false
+    },
+    {
+        data: 'aksi',
+        searchable: false,
+        sortable: false,
+        className: 'text-center'
+    },
+]
+
             });
 
             $('#modal-form').validator().on('submit', function(e) {

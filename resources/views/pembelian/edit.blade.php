@@ -11,27 +11,52 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/pembelian.css') }}">
     <style>
+        .custom-title {
+            font-size: 1rem;
+        }
+        .nav-item .nav-link .icon-wrapper {
+    display: flex;
+    flex-direction: column;  /* Menyusun ikon dan teks secara vertikal */
+    align-items: center;  /* Menjaga ikon dan teks tetap terpusat secara horizontal */
+    gap: 4px;  /* Memberikan jarak antara ikon dan teks */
+}
 
-    .custom-title {
-        font-size: 1rem;  
-    }
-    .custom-badge {
-        font-size: 1rem; 
-        padding: 10px 15px; 
-        min-width: 20px;  
-        text-align: center;  
-    }
-    .custom-button {
-        font-size: 1rem; 
-        padding: 10px 15px; 
-    }
-    .custom-text {
-        font-size: 1rem;  
-    }
-        .product .card {
+.nav-item .nav-link .icon-wrapper i {
+    font-size: 24px;  /* Ukuran ikon */
+}
+
+.nav-item .nav-link .icon-wrapper span {
+    font-size: 14px;  /* Ukuran teks */
+    text-align: center;  /* Menjaga teks agar terpusat di bawah ikon */
+    white-space: nowrap;  /* Mencegah teks membungkus jika terlalu panjang */
+}
+
+.product .card {
             display: flex;
             flex-direction: column;
             height: 100%;
+        }
+        .nav-item .nav-link .icon-wrapper {
+    display: flex;
+    flex-direction: column;  /* Menyusun ikon dan teks secara vertikal */
+    align-items: center;  /* Menjaga ikon dan teks tetap terpusat secara horizontal */
+    gap: 4px;  /* Memberikan jarak antara ikon dan teks */
+}
+
+.nav-item .nav-link .icon-wrapper i {
+    font-size: 24px;  /* Ukuran ikon */
+}
+
+.nav-item .nav-link .icon-wrapper span {
+    font-size: 14px;  /* Ukuran teks */
+    text-align: center;  /* Menjaga teks agar terpusat di bawah ikon */
+    white-space: nowrap;  /* Mencegah teks membungkus jika terlalu panjang */
+}
+
+
+        .custom-bg {
+            background-color: #f9f9ff;
+            /* Warna biru muda lembut, bisa disesuaikan */
         }
 
         .product .card-img-top {
@@ -66,6 +91,61 @@
             display: flex;
             flex-direction: column;
         }
+        .quantity-controls {
+    display: flex;
+    align-items: center;   
+    gap: 12px;  
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;  
+}
+
+.adjust-quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;  
+    height: 28px;  
+    font-size: 14px;  
+    border-radius: 4px;  
+    background-color: #00acac; 
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.adjust-quantity:hover {
+    background-color: #0cb4cb;  
+    transform: scale(1.1);  
+}
+
+.adjust-quantity:active {
+    background-color: #09c3a7;  
+    transform: scale(0.95);  
+}
+
+.adjust-quantity:focus {
+    outline: none;  
+    box-shadow: 0 0 0 2px rgba(2, 164, 170, 0.5);  
+}
+
+.adjust-quantity:disabled {
+    background-color: #d9534f;  
+    cursor: not-allowed;
+}
+
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
     </style>
     <!-- Navbar -->
     <!-- Navbar -->
@@ -86,7 +166,7 @@
                         <i class="fa fa-cash-register"></i> Checkout
                     </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="/kitchen" class="nav-link fs-5">
                         <i class="fa fa-table-list"></i> Stock
                     </a>
@@ -95,7 +175,7 @@
                     <a href="/kitchenorder" class="nav-link fs-5">
                         <i class="fa fa-list-check"></i> Kitchen Order
                     </a>
-                </li>
+                </li> --}}
             </ul>
         </div>
     </nav>
@@ -109,16 +189,25 @@
                     <div class="sticky-navbar">
                         <ul class="nav flex-column nav-pills">
                             <li class="nav-item">
-                                <button class="nav-link active" data-filter="all">Semua Menu</button>
+                                <button class="nav-link active" data-filter="all">
+                                    <div class="icon-wrapper">
+                                        <i class="fa fa-home"></i>
+                                        <span>Semua Menu</span>
+                                    </div>
+                                </button>
                             </li>
                             @foreach ($kategori as $item)
                                 <li class="nav-item">
                                     <button class="nav-link" data-filter="{{ $item->id }}">
-                                        {{ $item->nama_kategori }}
+                                        <div class="icon-wrapper">
+                                            <i class="fa {{ $item->icon }}"></i>
+                                            <span>{{ $item->nama_kategori }}</span>
+                                        </div>
                                     </button>
                                 </li>
                             @endforeach
                         </ul>
+                        
                     </div>
                 </div>
             </div>
@@ -153,21 +242,27 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="cart border rounded p-3">
-                    <h4 class="mb-3">Keranjang Pembelian</h4>
-                    <div id="cart-items" class="mb-3"></div>
-                    <div class="cart-summary mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>Total:</span>
-                            <span id="total-price">Rp 0</span>
+                <div class="cart border rounded shadow-sm p-4 bg-light">
+                    <h4 class="mb-4 text-center text-success" >Keranjang Pembelian</h4>
+
+                    <!-- Daftar item di keranjang -->
+                    <div id="cart-items" class="mb-4">
+                        <!-- Item akan ditambahkan di sini -->
+                    </div>
+
+                    <!-- Ringkasan harga -->
+                    <div class="cart-summary mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Total:</span>
+                            <span id="total-price" class="fw-bold">Rp 0</span>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Pajak:</span>
-                            <span id="tax-price">Rp 0</span>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Pajak:</span>
+                            <span id="tax-price" class="fw-bold">Rp 0</span>
                         </div>
-                        <div class="d-flex justify-content-between font-weight-bold">
-                            <b><span>Total Akhir:</span></b>
-                            <b><span id="final-price">Rp 0</span></b>
+                        <div class="d-flex justify-content-between fw-bold border-top pt-2">
+                            <span>Total Akhir:</span>
+                            <span id="final-price" class="text-success">Rp 0</span>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -323,15 +418,16 @@
             <span>${item.name}</span>
             <span class="item-price">Rp ${numberWithCommas(itemTotalPrice)}</span>
         </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <span class="item-price">Rp ${numberWithCommas(item.price)}</span>
-        </div>
+  
         <div class="quantity-controls mt-1">
             <button class="btn btn-sm adjust-quantity" data-id="${item.id}" data-action="decrease">-</button>
             <span class="item-quantity mx-2">${item.quantity}</span>
             <button class="btn btn-sm adjust-quantity" data-id="${item.id}" data-action="increase">+</button>
         </div>
         `;
+        //     <div class="d-flex justify-content-between align-items-center">
+        //     <span class="item-price">Rp ${numberWithCommas(item.price)}</span>
+        // </div>
                         cartItemsContainer.appendChild(itemElement);
 
                         // Memperbarui tombol tambah ke keranjang setiap item di-update

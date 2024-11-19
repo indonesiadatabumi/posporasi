@@ -16,9 +16,28 @@
             flex-direction: column;
             height: 100%;
         }
+        .nav-item .nav-link .icon-wrapper {
+    display: flex;
+    flex-direction: column;  
+    align-items: center;  
+    gap: 4px;   
+}
+
+.nav-item .nav-link .icon-wrapper i {
+    font-size: 24px;  
+}
+
+.nav-item .nav-link .icon-wrapper span {
+    font-size: 14px;   
+    text-align: center;   
+    white-space: nowrap;   
+}
+
+
         .custom-bg {
-        background-color: #f9f9ff; /* Warna biru muda lembut, bisa disesuaikan */
-    }
+            background-color: #f9f9ff;
+        }
+
         .product .card-img-top {
             object-fit: cover;
             height: 200px;
@@ -51,8 +70,62 @@
             display: flex;
             flex-direction: column;
         }
+        .quantity-controls {
+    display: flex;
+    align-items: center;   
+    gap: 12px;  
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px; 
+}
+
+.adjust-quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;   
+    height: 28px;  
+    font-size: 14px;  
+    border-radius: 4px;  
+    background-color: #00acac;  
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.adjust-quantity:hover {
+    background-color: #0cb4cb;  
+    transform: scale(1.1);  
+}
+
+.adjust-quantity:active {
+    background-color: #09c3a7;  
+    transform: scale(0.95);  
+}
+
+.adjust-quantity:focus {
+    outline: none;  
+    box-shadow: 0 0 0 2px rgba(2, 164, 170, 0.5);  
+}
+
+.adjust-quantity:disabled {
+    background-color: #d9534f; 
+    cursor: not-allowed;
+}
+
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
     </style>
-    <!-- Navbar -->
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-3">
         <a class="navbar-brand d-flex align-items-center" href="/dashboard" style="font-size: 1.5rem;">
@@ -71,16 +144,6 @@
                         <i class="fa fa-cash-register"></i> Checkout
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/kitchen" class="nav-link fs-5">
-                        <i class="fa fa-table-list"></i> Stock
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/kitchenorder" class="nav-link fs-5">
-                        <i class="fa fa-list-check"></i> Kitchen Order
-                    </a>
-                </li>
             </ul>
         </div>
     </nav>
@@ -94,16 +157,26 @@
                     <div class="sticky-navbar">
                         <ul class="nav flex-column nav-pills">
                             <li class="nav-item">
-                                <button class="nav-link active" data-filter="all">Semua Menu</button>
+                                <button class="nav-link active" data-filter="all">
+                                    <div class="icon-wrapper">
+                                        <i class="fa fa-home"></i>
+                                        <span>Semua Menu</span>
+                                    </div>
+                                </button>
                             </li>
                             @foreach ($kategori as $item)
                                 <li class="nav-item">
                                     <button class="nav-link" data-filter="{{ $item->id }}">
-                                        {{ $item->nama_kategori }}
+                                        <div class="icon-wrapper">
+                                            <i class="fa {{ $item->icon }}"></i>
+                                            <span>{{ $item->nama_kategori }}</span>
+                                        </div>
                                     </button>
                                 </li>
                             @endforeach
                         </ul>
+                        
+                        
                     </div>
                 </div>
             </div>
@@ -139,13 +212,13 @@
             </div>
             <div class="col-md-3">
                 <div class="cart border rounded shadow-sm p-4 bg-light">
-                    <h4 class="mb-4 text-center text-primary">Keranjang Pembelian</h4>
-                    
+                    <h4 class="mb-4 text-center text-success" >Keranjang Pembelian</h4>
+
                     <!-- Daftar item di keranjang -->
                     <div id="cart-items" class="mb-4">
                         <!-- Item akan ditambahkan di sini -->
                     </div>
-            
+
                     <!-- Ringkasan harga -->
                     <div class="cart-summary mb-4">
                         <div class="d-flex justify-content-between mb-2">
@@ -161,7 +234,7 @@
                             <span id="final-price" class="text-success">Rp 0</span>
                         </div>
                     </div>
-            
+
                     <!-- Tipe Pesanan -->
                     <div class="mb-4">
                         <label for="order-type" class="form-label fw-semibold">Tipe Pesanan:</label>
@@ -171,7 +244,7 @@
                             <option value="take-away">Take Away</option>
                         </select>
                     </div>
-            
+
                     <!-- Pilihan Meja (tersembunyi jika tidak dibutuhkan) -->
                     <div class="mb-4" id="meja-container" style="display: none;">
                         <label for="meja-select" class="form-label fw-semibold">Pilih Meja:</label>
@@ -186,18 +259,19 @@
                             @endforeach
                         </select>
                     </div>
-            
+
                     <!-- Nama Pembeli -->
                     <div class="mb-4">
                         <label for="customer-name" class="form-label fw-semibold">Nama Pembeli:</label>
-                        <input type="text" class="form-control" id="customer-name" placeholder="Masukkan nama pembeli" required>
+                        <input type="text" class="form-control" id="customer-name" placeholder="Masukkan nama pembeli"
+                            required>
                     </div>
-            
+
                     <!-- Tombol Checkout -->
                     <button id="checkout-btn" class="btn btn-success w-100">Checkout</button>
                 </div>
             </div>
-            
+
         </div>
     </div>
     @push('scripts')
@@ -206,7 +280,6 @@
                 const orderTypeSelect = document.getElementById('order-type');
                 const mejaContainer = document.getElementById('meja-container');
 
-                // Tampilkan pilihan meja jika dine-in
                 orderTypeSelect.addEventListener('change', function() {
                     if (this.value === 'dine-in') {
                         mejaContainer.style.display = 'block';
@@ -342,68 +415,74 @@
                 });
 
                 document.getElementById('checkout-btn').addEventListener('click', function() {
-                    const customerName = document.getElementById('customer-name').value;
-                    const selectedMeja = document.getElementById('meja-select').value;
+    const checkoutBtn = this; 
+    checkoutBtn.disabled = true; 
 
-                    if (!customerName) {
-                        alert('Silakan masukkan nama pembeli.');
-                        return;
-                    }
-                    if (orderTypeSelect.value === 'dine-in' && !selectedMeja) {
-                        alert('Silakan pilih meja.');
-                        return;
-                    }
-                    if (!cartItems.length) {
-                        alert('Keranjang pembelian kosong.');
-                        return;
-                    }
+    const customerName = document.getElementById('customer-name').value;
+    const selectedMeja = document.getElementById('meja-select').value;
 
-                    const cartData = {
-                        customer_name: customerName,
-                        jenis_pesanan: orderTypeSelect.value,
-                        meja_id: orderTypeSelect.value === 'dine-in' ? selectedMeja : null,
-                        items: cartItems.map(item => ({
-                            id: item.id,
-                            quantity: item.quantity,
-                            price: item.price
-                        })),
-                        total_price: finalPrice,
-                        status: 'pending'
-                    };
+    if (!customerName) {
+        alert('Silakan masukkan nama pembeli.');
+        checkoutBtn.disabled = false; 
+        return;
+    }
+    if (orderTypeSelect.value === 'dine-in' && !selectedMeja) {
+        alert('Silakan pilih meja.');
+        checkoutBtn.disabled = false; 
+        return;
+    }
+    if (!cartItems.length) {
+        alert('Keranjang pembelian kosong.');
+        checkoutBtn.disabled = false;  
+        return;
+    }
 
-                    fetch('/pembelian/checkout', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(cartData)
-                        })
-                        .then(response => {
-                            if (!response.ok) throw new Error('Gagal melakukan checkout');
-                            return response.json();
-                        })
-                        .then(data => {
-                            Swal.fire({
-                                    icon: 'success',
-                                    title: 'Checkout Berhasil',
-                                    footer: '<a href="/pembayaran">Lanjut ke pembayaran?</a>'
-                                }).then(() => {
-                                    window.location.href = '/pembelian';
-                                });
-                        })
-                        
-                        .catch(error => {
-                            Swal.fire({
-                                title: 'Terjadi Kesalahan!',
-                                text: error.message,
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            }).then(() => {
-                                this.disabled = false;
-                            });
-                        });
-                });
+    const cartData = {
+        customer_name: customerName,
+        jenis_pesanan: orderTypeSelect.value,
+        meja_id: orderTypeSelect.value === 'dine-in' ? selectedMeja : null,
+        items: cartItems.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            price: item.price
+        })),
+        total_price: finalPrice,
+        status: 'pending'
+    };
+
+    fetch('/pembelian/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify(cartData)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Gagal melakukan checkout');
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Checkout Berhasil',
+            footer: '<a href="/pembayaran">Lanjut ke pembayaran?</a>'
+        }).then(() => {
+            window.location.href = '/pembelian';
+        });
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Terjadi Kesalahan!',
+            text: error.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            checkoutBtn.disabled = false;  
+        });
+    });
+});
+
             });
             document.querySelectorAll('.nav-link[data-filter]').forEach(button => {
                 button.addEventListener('click', function() {

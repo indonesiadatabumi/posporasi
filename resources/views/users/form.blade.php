@@ -20,13 +20,6 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="nomor_identitas" class="form-label">Nomor Identitas</label>
-                        <input type="text" name="nomor_identitas" id="userIdentity" class="form-control" required>
-                        @error('nomor_identitas')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" name="email" id="userEmail" class="form-control" required>
                         @error('email')

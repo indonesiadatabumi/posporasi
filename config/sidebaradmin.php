@@ -21,8 +21,12 @@ return [
 			'route-name' => 'dashboard'
 	],[
 		'icon' => 'fa fa-utensils',
-		'title' => 'POS System',
+		'title' => 'POS System Kasir',
 		'url' => '/pembelian',
+	],[
+		'icon' => 'fa fa-utensils',
+		'title' => 'POS System Kitchen',
+		'url' => '/kitchenorder',
 	],[
 	'icon' => 'fa fa-database',
 		'title' => 'MASTER',
@@ -52,51 +56,44 @@ return [
 			'title' => 'Laporan Pembayaran',
 			'route-name' => '/lpembayaran	'
 		],[
-			'url' => '/pembelian',
-			'title' => 'Pembelian',
-			'route-name' => '/pembelian'
+			'url' => '/pemasukan',
+			'title' => 'Laporan Pemasukan',
+			'route-name' => '/pemasukan'
 		],[
-			'url' => '/lpembelian',
+			'url' => 'lpenjualan',
 			'title' => 'Laporan Penjualan',
-			'route-name' => '/lpembelian'		
+			'route-name' => 'lpenjualan'		
 		]]
-	
 	],[
-		'icon' => 'fa fa-file',
-		'title' => 'REPORT',
-		'url' => 'javascript:;',
-		'caret' => true,
-		'sub_menu' => [[
-				'url' => '/laporan/transaksi',
-				'title' => 'Transaksi',
-				'route-name' => 'laporan-transaksi'
+		'icon' => 'fa fa-home',
+			'title' => 'Terdaftar',
+			'url' => 'javascript:;',
+			'caret' => true,
+			'sub_menu' => [[
+				'url' => '/liatuser',
+				'title' => 'User Terdaftar',
+				'route-name' => '/liatuser'
 			],[
-				'url' => '/laporan/pengeluaran',	
-				'title' => 'Pengeluaran',
-				'route-name' => 'laporan-pengeluaran'
-			],[
-				'url' => '/laporan/pemasukan',
-				'title' => 'Pemasukan',
-				'route-name' => 'laporan-pemasukan'
+				'url' => '/restoran',
+				'title' => 'Restoran Terdaftar',
+				'route-name' => '/restoran'
 			
-			]]		
+			]]
+		
 	],[
 		'icon' => 'fa fa-users',
-			'title' => 'User',
-			'url' => 'javascript:;',
-			'route-name' => '/pengaturan'
+			'title' => 'Employee',
+			'url' => '/users',
+			'route-name' => '/users'
 	],[
 		'icon' => 'fa fa-cog',
-			'title' => 'Pengaturan',
-			'url' => 'javascript:;',
-			'route-name' => '/pengaturan'
-	
+			'title' => 'Resto',
+			'url' => '/resto',
+			'route-name' => '/resto'
 	],[
-	'icon' => 'fa fa-key',
-'url' =>'logout',
-'title' => 'Logout',
-'route-name' => ''
-
-
+		'icon' => 'fa fa-sign-out',
+			'title' => 'Logout',
+			'url' => '/logout',
+			'route-name' => 'logout'
 	]]
 ];

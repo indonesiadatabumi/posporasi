@@ -67,9 +67,9 @@ class MejaController extends Controller
 
         $meja = new Meja();
         $meja->nomor_meja = $request->nomor_meja;
-        $meja->kapasitas = $request->kapasitas; // Menyimpan kapasitas
-        $meja->id_resto = Auth::user()->restoran->id; // Mengambil id_resto dari pengguna yang login
-        $meja->status = 'tersedia'; // Status default
+        $meja->kapasitas = $request->kapasitas;  
+        $meja->id_resto = Auth::user()->restoran->id;  
+        $meja->status = 'tersedia';  
         $meja->save();
 
         return redirect()->back()->with('success', 'Data berhasil disimpan');

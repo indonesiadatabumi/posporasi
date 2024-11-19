@@ -45,8 +45,12 @@
                         <input type="text" name="nama_resto" class="form-control fs-13px" placeholder="Nama Restoran" required />
                     </div>
                     <div class="mb-3">
-                        <label class="mb-2">Nomor Identitas <span class="text-danger">*</span></label>
-                        <input type="text" name="nomor_identitas" class="form-control fs-13px" placeholder="Nomor Identitas" required />
+                        <label class="mb-2">NIK (Nomor Identitas Pengguna)<span class="text-danger">*</span></label>
+                        <input type="text" name="nik" class="form-control fs-13px" placeholder="Masukkan NIK" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="mb-2">NIB (Nomor Identitas Restoran)<span class="text-danger">*</span></label>
+                        <input type="text" name="nib" class="form-control fs-13px" placeholder="Masukkan NIB" required />
                     </div>
                     <div class="mb-3">
                         <label class="mb-2">Alamat Restoran <span class="text-danger">*</span></label>
@@ -62,11 +66,21 @@
                     </div>
                     <div class="mb-3">
                         <label class="mb-2">Password <span class="text-danger">*</span></label>
-                        <input type="password" name="password" class="form-control fs-13px" placeholder="Password" required />
+                        <div class="input-group">
+                            <input type="password" name="password" id="password" class="form-control fs-13px" placeholder="Password" required />
+                            <span class="input-group-text" onclick="togglePassword('password')" style="cursor: pointer;">
+                                <i class="fa fa-eye" id="togglePasswordIcon"></i>
+                            </span>
+                        </div>
                     </div>
                     <div class="mb-4">
                         <label class="mb-2">Konfirmasi Password <span class="text-danger">*</span></label>
-                        <input type="password" name="password_confirmation" class="form-control fs-13px" placeholder="Konfirmasi Password" required />
+                        <div class="input-group">
+                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control fs-13px" placeholder="Konfirmasi Password" required />
+                            <span class="input-group-text" onclick="togglePassword('password_confirmation')" style="cursor: pointer;">
+                                <i class="fa fa-eye" id="togglePasswordConfirmationIcon"></i>
+                            </span>
+                        </div>
                     </div>
                     <div class="form-check mb-4">
                         <input class="form-check-input" type="checkbox" value="" id="agreementCheckbox" required />
@@ -88,4 +102,24 @@
             </p>
         </div>
     </div>    
+
+    <!-- Font Awesome CDN (Jika belum ditambahkan di layouts.default) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-tC5kXx5v+M+sykFR5t0P6Q4RCcUHZjZhU3PnL0HFAlx56tgx3xvM2hqevl7p7F0gk3sBc6J/Ru8LW8GYh3E2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script>
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const icon = fieldId === 'password' ? document.getElementById('togglePasswordIcon') : document.getElementById('togglePasswordConfirmationIcon');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 @endsection

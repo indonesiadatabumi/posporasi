@@ -1,146 +1,78 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\Kategori; // Ganti dengan nama model kategori Anda
-use App\Models\Produk;   // Ganti dengan nama model produk Anda
+
+use App\Models\Pembelian;
+use App\Models\User;
+use App\Models\Restoran;
+use App\Models\Pembayaran;
+use App\Models\PembelianDetail; 
 use Illuminate\Http\Request;
-use App\Models\Toko;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 
 class MainController extends Controller {
-    
+ 
+
+
     public function dashboard() {
-        // Ambil jumlah kategori dan produk
-        $jumlahKategori = Kategori::count();
-        $jumlahProduk = Produk::count();
-        $pengeluaran = 1291922; // Misalnya, Anda bisa mengubah ini untuk mengambil dari database
-        $penjualan = 120; // Misalnya, Anda bisa mengubah ini untuk mengambil dari database
-
-        // Kirim data ke view
-        return view('dashboard', compact('jumlahKategori', 'jumlahProduk', 'pengeluaran', 'penjualan'));
+        $jumlahUser = User::count();
+        $jumlahRestoran = Restoran::count();
+        // Data pemasukan harian
+        $pemasukanHarian = Pembayaran::whereDate('created_at', today())
+            ->where('id_resto', Auth::user()->restoran->id)
+            ->sum('total_pembayaran');
+    
+        // Data pemasukan bulanan
+        $pemasukanBulanan = Pembayaran::whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->where('id_resto', Auth::user()->restoran->id)
+            ->sum('total_pembayaran');
+    
+        // Pendapatan bulan ini
+        $pendapatanBulanIni = Pembayaran::whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->where('id_resto', Auth::user()->restoran->id)
+            ->sum('total_pembayaran');
+    
+        // Menghitung jumlah transaksi hari ini
+        $jumlahTransaksiHariIni = Pembelian::whereDate('created_at', today())
+            ->where('id_resto', Auth::user()->restoran->id)
+            ->count();
+    
+        // Menghitung jumlah transaksi bulan ini
+        $jumlahTransaksiBulanIni = Pembelian::whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->where('id_resto', Auth::user()->restoran->id)
+            ->count();
+    
+        // Menghitung produk paling laku bulan ini
+        $produkPalingLaku = PembelianDetail::select('id_produk', \DB::raw('SUM(jumlah) as total_jumlah'))
+            ->join('pembelian', 'pembelian_detail.id_pembelian', '=', 'pembelian.id')
+            ->whereMonth('pembelian.created_at', now()->month)
+            ->whereYear('pembelian.created_at', now()->year)
+            ->where('pembelian.id_resto', Auth::user()->restoran->id)  
+            ->groupBy('id_produk')
+            ->orderBy('total_jumlah', 'DESC')
+            ->limit(1)  
+            ->with('produk')  
+            ->first();
+    
+        return view('dashboard', compact('jumlahUser','jumlahRestoran','jumlahTransaksiHariIni', 'jumlahTransaksiBulanIni', 'pemasukanBulanan', 'pemasukanHarian', 'produkPalingLaku', 'pendapatanBulanIni'));
     }
     
-    public function laporanPenjualan() {
-        return view('pages/laporan-penjualan');
-    }
-    public function laporanTransaksi() {
-        return view('pages/laporan-transaksi');
-    }
-    public function laporanPengeluaran() {
-        return view('pages/laporan-pengeluaran');
-    }
-    public function laporanPemasukan() {
-        return view('pages/laporan-pemasukan');
-    }
-    
-    public function posCustomerOrder() {
-        return view('pages/pos-customer-order');
-    }
-    public function posKitchenOrder() {
-        return view('pages/pos-kitchen-order');
-    }
-    public function posCounterCheckout() {
-        return view('pages/pos-counter-checkout');
-    }
-    public function posTableBooking() {
-        return view('pages/pos-table-booking');
-    }
-    public function posMenuStock() {
-        return view('pages/pos-menu-stock');
-    }
-    
-    public function emailTemplateSystem() {
-        return view('pages/email-template-system');
-    }
-    public function emailTemplateNewsletter() {
-        return view('pages/email-template-newsletter');
-    }
-    public function extraInvoice() {
-        return view('pages/extra-invoice');
-    }
-    public function extraProfile() {
-        return view('pages/extra-profile');
-    }
-    public function loginV1() {
-        return view('pages/login-v1');
-    }
-    public function loginV2() {
-        return view('pages/login-v2');
-    }
-    public function loginV3() {
-        return view('pages/login-v3');
-    }
-    public function registerV3() {
-        return view('pages/register-v3');
-    }
-    public function pengaturan() {
-        return view('pages/pengaturan');
-    }
-    public function profil() {
-        return view('pages/profil');
-    }
-    public function editProfil() {
-        return view('pages/edit-profil');
-    }
-    public function menuDaftar() {
+    public function getMonthlyIncomeData()
+    {
+        $restoranId = Auth::user()->restoran->id;
         
-        return view('pages/menu-daftar');
+        $pemasukanBulanan = Pembayaran::where('id_resto', $restoranId)
+            ->selectRaw('MONTH(created_at) as bulan, SUM(total_pembayaran) as total_pemasukan')
+            ->whereYear('created_at', now()->year)
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->get();
+    
+        return response()->json($pemasukanBulanan);
     }
     
-
-    
-    // public function menuKategoriTambah() {
-    //     return view('pages/menu-kategori-tambah');
-    // }
-    public function menuTambah() {
-        return view('pages/menu-tambah');
-    }
-    
-    // public function kategori() {
-    //     return view('kategori/index');
-    // }
 }
-
-// use App\Models\User;
-
-// class UserController extends Controller
-// {
-//     public function register(Request $request)
-//     {
-//         // Validasi data
-//         $validatedData = $request->validate([
-//             'name' => 'required|string|max:255',
-//             'identity_number' => 'required|string|max:255',
-//             'address' => 'required|string|max:255',
-//             'phone_number' => 'required|string|max:255',
-//             'username' => 'required|string|max:255|unique:users',
-//             'email' => 'required|string|email|max:255|unique:users',
-//             'password' => 'required|string|min:8|confirmed',
-//         ]);
-
-//         // Buat pengguna baru
-//         $user = User::create([
-//             'name' => $validatedData['name'],
-//             'identity_number' => $validatedData['identity_number'],
-//             'address' => $validatedData['address'],
-//             'phone_number' => $validatedData['phone_number'],
-//             'username' => $validatedData['username'],
-//             'email' => $validatedData['email'],
-//             'password' => bcrypt($validatedData['password']), // Hash password
-//         ]);
-
-//         // Redirect atau beri respons sesuai kebutuhan
-//         return redirect()->route('home')->with('success', 'Akun telah dibuat!');
-//     }
-
-//     // use App\Models\Menu; // Pastikan model Menu sudah di-import
-
-// // public function showMenu()
-// // {
-// //     // Mengambil semua data menu dari database
-// //     $menus = Menu::all();
-
-// //     // Mengirim data menu ke tampilan
-// //     return view('pages.menu-daftar', compact('menus'));
-// // }
-// }
-

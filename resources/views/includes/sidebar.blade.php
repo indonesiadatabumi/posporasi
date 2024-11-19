@@ -1,32 +1,28 @@
 @php
     $appSidebarClass = (!empty($appSidebarTransparent)) ? 'app-sidebar-transparent' : '';
+    $role = Auth::user()->role; 
+    $sidebarConfigFile = 'sidebar' . strtolower($role); 
+    $menuItems = config($sidebarConfigFile . '.menu', []); 
 @endphp
 
 <style>
     .menu-profile-image {
-        width: 40px; /* Atur lebar sesuai kebutuhan */
-        height: 40px; /* Atur tinggi sesuai kebutuhan */
-        border-radius: 50%; /* Membuat gambar menjadi bulat */
-        overflow: hidden; /* Menghilangkan bagian gambar yang keluar dari batas */
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #f0f0f0; /* Warna latar belakang jika foto tidak ada */
+        background-color: #f0f0f0;
     }
 
     .menu-profile-image img {
-        width: 100%; /* Memastikan gambar memenuhi area */
-        height: 100%; /* Memastikan gambar memenuhi area */
-        object-fit: cover; /* Memastikan gambar tetap proporsional */
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .silhouette {
-        width: 100%; /* Memastikan siluet memenuhi area */
-        height: 100%; /* Memastikan siluet memenuhi area */
-        background-image: url('/path/to/silhouette-icon.png'); /* Ganti dengan path ke gambar siluet */
-        background-size: cover; /* Menyesuaikan ukuran gambar dengan area */
-        background-position: center; /* Memusatkan gambar */
-    }
 </style>
 
 <div id="sidebar" class="app-sidebar {{ $appSidebarClass }}">
@@ -35,14 +31,12 @@
         <div class="menu">
             @if (!$appSidebarSearch)
             <div class="menu-profile">
-                <a href="{{ route('profile.index') }}" class="menu-profile-link" onclick="console.log('Profile link clicked!')">
+                <a href="{{ route('profile.index') }}" class="menu-profile-link">
 
                     <div class="menu-profile-cover with-shadow"></div>
                     <div class="menu-profile-image">
                         @if(Auth::user()->foto)
                             <img src="{{ Auth::user()->foto }}" alt="User Image" />
-                        @else
-                            <div class="silhouette"></div> 
                         @endif
                     </div>
                     <div class="menu-profile-info">
@@ -102,7 +96,7 @@
                     return $subMenu;
                 }
                 
-                foreach (config('sidebar.menu') as $key => $menu) {
+                foreach ($menuItems as $key => $menu) {
                     $GLOBALS['parent_active'] = '';
                     
                     $hasSub = (!empty($menu['sub_menu'])) ? 'has-sub' : '';

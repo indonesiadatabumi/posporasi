@@ -16,7 +16,7 @@ class BuatPembayaranTable extends Migration
         Schema::create('pembayaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_resto')->constrained('restoran')->onDelete('cascade'); 
-            // $table->foreignId('id_user')->constrained('users')->onDelete('cascade'); 
+            $table->foreignId('id_user')->constrained('users')->onDelete('cascade'); 
             $table->foreignId('pembelian_id')->constrained('pembelian')->onDelete('cascade'); 
             $table->decimal('subtotal', 10, 2); 
             $table->decimal('pajak', 10, 2)->default(0); 

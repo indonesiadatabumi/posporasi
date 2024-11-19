@@ -13,6 +13,25 @@
 @endpush
 
 @section('content')
+<style>
+        .nav-item .nav-link .icon-wrapper {
+    display: flex;
+    flex-direction: column;  
+    align-items: center;   
+    gap: 4px;   
+}
+
+.nav-item .nav-link .icon-wrapper i {
+    font-size: 24px;  
+}
+
+.nav-item .nav-link .icon-wrapper span {
+    font-size: 14px;   
+    text-align: center;  
+    white-space: nowrap;   
+}
+
+</style>
     <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-3 fixed-top">
         <a class="navbar-brand d-flex align-items-center" href="/dashboard" style="font-size: 1.5rem;">
             <img src="/assets/img/pos/logo.svg" width="30" height="30" alt="Pine & Dine" class="me-2">
@@ -23,7 +42,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="/pembelian" class="nav-link fs-5">
                         <i class="fa fa-shopping-cart"></i> Order
                     </a>
@@ -32,7 +51,7 @@
                     <a href="/pembayaran" class="nav-link fs-5">
                         <i class="fa fa-cash-register"></i> Checkout
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a href="/kitchen" class="nav-link fs-5">
                         <i class="fa fa-table-list"></i> Stock
@@ -162,8 +181,8 @@
                         if (data.success) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Status Updated',
-                                text: 'Item status updated to complete'
+                                title: 'Complete',
+                                text: 'Pesanan selesai dibuat'
                             }).then(() => {
                                 location.reload(); 
                             });

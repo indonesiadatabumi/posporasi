@@ -29,17 +29,41 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        $this->validator($request->all())->validate();
-
+        // Validasi data input
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nama_resto' => 'required|string|max:255',
+            'nik' => 'required|string|max:16|unique:users,nomor_identitas',
+            'nib' => 'required|string|max:13|unique:restoran,nomor_identitas',
+            'alamat' => 'required|string|max:255',
+            'nomor_telepon' => 'required|string|max:15',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+    
+        // Simpan data restoran dengan NIB
         $restoran = Restoran::create([
             'nama_resto' => $request->nama_resto,
-            'nomor_identitas' => $request->nomor_identitas,
+            'nomor_identitas' => $request->nib,
             'email' => $request->email,
             'alamat' => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
         ]);
+    
+        // Simpan data pengguna dengan NIK
+        $user = User::create([
+            'nama' => $request->nama,
+            'id_resto' => $restoran->id,
+            'nomor_identitas' => $request->nik,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'owner',
+            'alamat' => $request->alamat,
+            'nomor_telepon' => $request->nomor_telepon,
+        ]);
+        // $user = $this->create($request->all(), $restoran->id);
 
-        $user = $this->create($request->all(), $restoran->id);
+        $user->assignRole('owner');
 
         auth()->login($user);
 

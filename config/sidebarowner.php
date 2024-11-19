@@ -21,8 +21,12 @@ return [
 			'route-name' => 'dashboard'
 	],[
 		'icon' => 'fa fa-utensils',
-		'title' => 'POS System',
+		'title' => 'POS System Kasir',
 		'url' => '/pembelian',
+	],[
+		'icon' => 'fa fa-utensils',
+		'title' => 'POS System Kitchen',
+		'url' => '/kitchenorder',
 	],[
 	'icon' => 'fa fa-database',
 		'title' => 'MASTER',
@@ -63,7 +67,7 @@ return [
 		
 	],[
 		'icon' => 'fa fa-users',
-			'title' => 'User',
+			'title' => 'Employee',
 			'url' => '/users',
 			'route-name' => '/users'
 	],[

@@ -62,7 +62,9 @@ return [
             'region' => env('AWS_REGION'),
             'bucket' => env('AWS_BUCKET'),
         ],
-
+        'links' => [
+                public_path('storage') => storage_path('app/public'),
+            ],
     ],
 
 ];

@@ -21,7 +21,9 @@ class KategoriController extends Controller
     public function data()
     {
         $kategori = Kategori::where('id_resto', Auth::user()->restoran->id)
-        ->get();
+            ->select(['id', 'nama_kategori', 'icon'])  
+            ->get();
+    
         return Datatables()
             ->of($kategori)
             ->addIndexColumn()
@@ -33,10 +35,10 @@ class KategoriController extends Controller
                 </div>
                 ';
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['aksi', 'icon'])  
             ->make(true);
     }
-
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -54,22 +56,37 @@ class KategoriController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function store(Request $request)
-    {
-        // Validasi untuk memastikan tidak ada nama kategori yang sama untuk pengguna ini
-        $request->validate([
-            'nama_kategori' => 'required|string|unique:kategori,nama_kategori,NULL,id,id_resto,' . Auth::id(),
-        ], [
-            'nama_kategori.unique' => 'Kategori sudah ada', // Pesan khusus jika kategori sudah ada
-        ]);
-    
-        $kategori = new Kategori();
-        $kategori->nama_kategori = $request->nama_kategori;
-        $kategori->id_resto=Auth::user()->restoran->id;
-        $kategori->save();
-    
-        return redirect()->back()->with('success', 'Data berhasil disimpan');
-    }
+     public function store(Request $request)
+     {
+         $request->validate([
+             'nama_kategori' => 'required|string|unique:kategori,nama_kategori,NULL,id,id_resto,' . Auth::id(),
+             'icon' => 'nullable|string',
+         ]);
+     
+         $kategori = new Kategori();
+         $kategori->nama_kategori = $request->nama_kategori;
+         $kategori->icon = $request->icon; // Menyimpan ikon
+         $kategori->id_resto = Auth::user()->restoran->id;
+         $kategori->save();
+     
+         return redirect()->back()->with('success', 'Data berhasil disimpan');
+     }
+     
+     public function update(Request $request, $id)
+     {
+         $request->validate([
+             'nama_kategori' => 'required|string|unique:kategori,nama_kategori,' . $id . ',id,id_resto,' . Auth::id(),
+             'icon' => 'nullable|string',
+         ]);
+     
+         $kategori = Kategori::find($id);
+         $kategori->nama_kategori = $request->nama_kategori;
+         $kategori->icon = $request->icon; // Memperbarui ikon
+         $kategori->save();
+     
+         return redirect()->back()->with('success', 'Data berhasil diperbarui');
+     }
+     
     
     /**
      * Display the specified resource.
@@ -103,20 +120,7 @@ class KategoriController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request, $id)
-    {
-        // Validasi untuk memastikan tidak ada nama kategori yang sama untuk pengguna ini, kecuali kategori itu sendiri
-        $request->validate([
-            'nama_kategori' => 'required|string|unique:kategori,nama_kategori,' . $id . ',id,id_resto,' . Auth::id(), // Unik berdasarkan id_user
-        ]);
-    
-        $kategori = Kategori::find($id);
-        $kategori->nama_kategori = $request->nama_kategori;
-        $kategori->save(); // Gunakan save() untuk menyimpan perubahan
-    
-        return redirect()->back()->with('success', 'Data berhasil disimpan');
-    }
-    /**
+   /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -130,3 +134,6 @@ class KategoriController extends Controller
         return response(null, 204);
     }
 }
+
+ 
+

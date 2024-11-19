@@ -7,6 +7,25 @@
 ])
 
 @section('content')
+<style>
+        .nav-item .nav-link .icon-wrapper {
+    display: flex;
+    flex-direction: column;  
+    align-items: center; 
+    gap: 4px;   
+}
+
+.nav-item .nav-link .icon-wrapper i {
+    font-size: 24px;  
+}
+
+.nav-item .nav-link .icon-wrapper span {
+    font-size: 14px; 
+    text-align: center;  
+    white-space: nowrap;  
+}
+
+</style>
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-3">
     <a class="navbar-brand d-flex align-items-center" href="/dashboard" style="font-size: 1.5rem;">
@@ -25,7 +44,7 @@
                     <i class="fa fa-cash-register"></i> Checkout
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="/kitchen" class="nav-link fs-5">
                     <i class="fa fa-table-list"></i> Stock
                 </a>
@@ -34,7 +53,7 @@
                 <a href="/kitchenorder" class="nav-link fs-5">
                     <i class="fa fa-list-check"></i> Kitchen Order
                 </a>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </nav>
@@ -125,7 +144,7 @@
         <!-- Cart Section -->
         <div class="col-lg-3 col-md-4">
             <div class="cart border rounded p-4 shadow-lg bg-white" style="padding: 20px;">
-                <h4 class="mb-4 text-center text-primary">Keranjang Pembelian</h4>
+                <h4 class="mb-4 text-center text-success">Keranjang Pembelian</h4>
                 <div id="cart-items" class="mb-3">
                     <!-- Item keranjang akan ditambahkan di sini -->
                 </div>
@@ -141,7 +160,7 @@
                     </div>
                     <div class="d-flex justify-content-between fw-bold border-top pt-2">
                         <span>Total Akhir:</span>
-                        <span id="final-price" class="text-primary">Rp 0</span>
+                        <span id="final-price" class="text-success">Rp 0</span>
                     </div>
                 </div>
                 <div class="mb-4">
@@ -165,12 +184,9 @@
 
 <script>
 $(document).ready(function() {
-    // Disable the pay button initially
 $('#pay-btn').prop('disabled', true);
 
-// Event listener for clicks on any card element
 $('.card').on('click', function() {
-    // Enable the pay button when any card is clicked
     $('#pay-btn').prop('disabled', false);
 });
 
@@ -257,15 +273,13 @@ function editPembelian(id) {
         $('#pembelian-update-form').attr('action', "/pembelian/" + id);
         $('#update-form').show();
 
-        // Tampilkan tombol Edit dan Hapus
         $('#edit-btn').show();
-        $('.btn-danger').show(); // Menampilkan tombol Hapus
+        $('.btn-danger').show();  
     });
 }
 
 $('#update-form').on('submit', function(e) {
-    e.preventDefault(); // Menghentikan form dari submit default
-    // Lakukan ajax request untuk update jika perlu
+    e.preventDefault();  
 });
 
 </script>

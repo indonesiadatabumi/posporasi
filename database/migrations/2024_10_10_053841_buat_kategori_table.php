@@ -17,6 +17,7 @@ class BuatKategoriTable extends Migration
             $table->id();
             $table->foreignId('id_resto')->constrained('restoran')->onDelete('cascade'); 
             $table->string('nama_kategori');
+            $table->string('icon')->nullable();
             $table->timestamps();
         });
     }

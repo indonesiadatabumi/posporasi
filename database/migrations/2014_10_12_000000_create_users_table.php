@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->foreignId('id_resto')->constrained('restoran')->onDelete('cascade'); 
-            $table->string('nomor_identitas');
+            $table->string('nomor_identitas')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

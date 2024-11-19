@@ -6,63 +6,100 @@ use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
-
+use PDF;
+use Carbon\Carbon;
 class PemasukanController extends Controller
 {
     public function index()
     {
-        return view('pemasukan.index'); // Menampilkan halaman index laporan pemasukan
+        return view('pemasukan.index'); 
     }
 
-    public function data(Request $request)
-    {
-        // Validasi rentang tanggal
-        $request->validate([
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-        ]);
+public function exportPdf(Request $request)
+{
+    $start_date = $request->input('start_date');
+    $end_date = $request->input('end_date');
 
-        // Ambil ID restoran dari pengguna yang sedang login
-        $restoranId = Auth::user()->restoran->id; // Mengakses ID restoran
+    $query = Pembayaran::query();
 
-        // Ambil data pembayaran berdasarkan rentang tanggal dan ID restoran
-        $query = Pembayaran::query()
-            ->where('id_resto', $restoranId);
-
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $startDate = $request->input('start_date');
-            $endDate = $request->input('end_date');
-
-            // Menambahkan satu hari pada end_date agar mencakup seluruh hari
-            $query->whereBetween('created_at', [$startDate, date('Y-m-d', strtotime($endDate . ' +1 day'))]);
-        }
-
-        // Mengelompokkan berdasarkan tanggal dan menjumlahkan subtotal, pajak, dan total_pemasukan
-        $pembayaran = $query->selectRaw('DATE(created_at) as tanggal_transaksi, 
-            SUM(subtotal) as total_subtotal, 
-            SUM(pajak) as total_pajak, 
-            SUM(total_pembayaran) as total_pemasukan')
-            ->groupBy('tanggal_transaksi')
-            ->get();
-
-        // Mengembalikan DataTables
-        return DataTables::of($pembayaran)
-            ->addIndexColumn()
-            ->addColumn('tanggal_transaksi', function ($row) {
-                return $row->tanggal_transaksi ? \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d-m-Y') : '-'; // Format tanggal
-            })
-            ->addColumn('subtotal', function ($row) {
-                return 'Rp. ' . number_format($row->total_subtotal, 0, ',', '.'); // Format subtotal tanpa ,00
-            })
-            ->addColumn('pajak', function ($row) {
-                return 'Rp. ' . number_format($row->total_pajak, 0, ',', '.'); // Format pajak tanpa ,00
-            })
-            ->addColumn('total_pemasukan', function ($row) {
-                return 'Rp. ' . number_format($row->total_pemasukan, 0, ',', '.'); // Format total pemasukan tanpa ,00
-            })
-            ->addColumn('aksi', function ($row) {
-                return ''; 
-            })
-            ->make(true);
+    if ($start_date) {
+        $query->whereDate('created_at', '>=', $start_date);
     }
+    if ($end_date) {
+        $query->whereDate('created_at', '<=', $end_date);
+    }
+
+    $pembayaran = $query->selectRaw('DATE(created_at) as tanggal_transaksi, 
+        SUM(subtotal) as total_subtotal, 
+        SUM(pajak) as total_pajak, 
+        SUM(total_pembayaran) as total_pemasukan')
+        ->groupBy('tanggal_transaksi')
+        ->get();
+
+    $grandTotalSubtotal = $pembayaran->sum('total_subtotal');
+    $grandTotalPajak = $pembayaran->sum('total_pajak');
+    $grandTotalPemasukan = $pembayaran->sum('total_pemasukan');
+
+    $data = [
+        'pembayaran' => $pembayaran,
+        'start_date' => $start_date,
+        'end_date' => $end_date,
+        'current_date' => Carbon::now()->format('d-m-Y'),
+        'grandTotalSubtotal' => $grandTotalSubtotal,
+        'grandTotalPajak' => $grandTotalPajak,
+        'grandTotalPemasukan' => $grandTotalPemasukan,
+    ];
+
+    $pdf = PDF::loadView('pemasukan.pemasukan_pdf', $data)->setPaper('a4', 'landscape');
+
+    return $pdf->download('laporan_pemasukan_' . Carbon::now()->format('d_m_Y') . '.pdf');
+}
+
+public function data(Request $request)
+{
+    $request->validate([
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+    ]);
+
+    $restoranId = Auth::user()->restoran->id;  
+
+    $query = Pembayaran::query()
+        ->where('id_resto', $restoranId);
+
+    if ($request->filled('start_date')) {
+        $startDate = $request->input('start_date');
+        $query->where('created_at', '>=', $startDate);
+    }
+
+    if ($request->filled('end_date')) {
+        $endDate = $request->input('end_date');
+        $query->whereBetween('created_at', [$startDate, Carbon::parse($endDate)->addDay()->format('Y-m-d')]);
+
+    }
+
+    $pembayaran = $query->selectRaw('DATE(created_at) as tanggal_transaksi, 
+        SUM(subtotal) as total_subtotal, 
+        SUM(pajak) as total_pajak, 
+        SUM(total_pembayaran) as total_pemasukan')
+        ->groupBy('tanggal_transaksi')
+        ->get();
+
+    return DataTables::of($pembayaran)
+        ->addIndexColumn()
+        ->addColumn('tanggal_transaksi', function ($row) {
+            return $row->tanggal_transaksi ? \Carbon\Carbon::parse($row->tanggal_transaksi)->format('d-m-Y') : '-'; // Format tanggal
+        })
+        ->addColumn('subtotal', function ($row) {
+            return 'Rp. ' . number_format($row->total_subtotal, 0, ',', '.'); 
+        })
+        ->addColumn('pajak', function ($row) {
+            return 'Rp. ' . number_format($row->total_pajak, 0, ',', '.');  
+        })
+        ->addColumn('total_pemasukan', function ($row) {
+            return 'Rp. ' . number_format($row->total_pemasukan, 0, ',', '.');  
+        })
+        ->make(true);
+}
+
 }

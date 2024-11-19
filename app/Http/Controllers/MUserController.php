@@ -27,7 +27,6 @@ class MUserController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nomor_identitas' => 'required|string|max:255|unique:users,nomor_identitas',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:kasir,kitchen',
@@ -37,16 +36,17 @@ class MUserController extends Controller
 
         $id_resto = Auth::user()->id_resto;
 
-        User::create([
+        $user = User::create([
             'nama' => $request->nama,
             'id_resto' => $id_resto,
-            'nomor_identitas' => $request->nomor_identitas,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'alamat' => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
         ]);
+
+        $user->assignRole($request->role);
 
         return redirect()->route('users.index')->with('success', 'Pengguna baru berhasil ditambahkan.');
     }
@@ -59,25 +59,24 @@ class MUserController extends Controller
 
     public function update(Request $request, $id)
 {
-    // Validasi input
     $request->validate([
         'nama' => 'required|string|max:255',
-        'nomor_identitas' => 'required|string|max:255|unique:users,nomor_identitas,' . $id,
         'email' => 'required|string|email|max:255|unique:users,email,' . $id,
         'role' => 'required|in:kasir,kitchen',
         'alamat' => 'nullable|string',
         'nomor_telepon' => 'nullable|string|max:20',
-        'password' => 'nullable|string|min:8|confirmed', // Membuat password menjadi opsional
+        'password' => 'nullable|string|min:8',  
     ]);
 
     $user = User::findOrFail($id);
-
+    $user->removeRole($user->role);
     $user->nama = $request->nama;
-    $user->nomor_identitas = $request->nomor_identitas;
     $user->email = $request->email;
     $user->role = $request->role;
     $user->alamat = $request->alamat;
     $user->nomor_telepon = $request->nomor_telepon;
+
+    $user->assignRole($request->role);
 
     if ($request->filled('password')) {
         $user->password = Hash::make($request->password);
@@ -93,7 +92,6 @@ public function destroy($id)
 {
     $user = User::findOrFail($id);
     
-    // Menghapus pengguna
     $user->delete();
 
     return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');

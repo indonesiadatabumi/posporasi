@@ -19,18 +19,18 @@ class ProfileController extends Controller
     {
         $request->validate([
             'nama' => 'nullable|string|max:255',
-            'nama_resto' => 'nullable|string|max:255',
+            // 'nama_resto' => 'nullable|string|max:255',
             'nomor_telepon' => 'nullable|string|max:15',
             'alamat' => 'nullable|string|max:255',
         ]);
 
         $user = Auth::user();
         $user->nama = $request->nama;
-        $user->nama_resto = $request->nama_resto;
+        // $user->nama_resto = $request->nama_resto;
         $user->nomor_telepon = $request->nomor_telepon;
         $user->alamat = $request->alamat;
         $user->save();
 
-        return redirect()->route('profile.show')->with('success', 'Informasi profil berhasil diperbarui.');
+        return redirect()->route('profile.index')->with('success', 'Informasi profil berhasil diperbarui.');
     }
 }

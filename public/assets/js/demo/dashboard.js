@@ -1,9 +1,3 @@
-/*
-Template Name: Color Admin - Responsive Admin Dashboard Template build with Twitter Bootstrap 5
-Version: 5.1.5
-Author: Sean Ngu
-Website: http://www.seantheme.com/color-admin/
-*/
 
 var handleVectorMap = function() {
 	"use strict";
@@ -324,4 +318,4 @@ var Dashboard = function () {
 
 $(document).ready(function() {
 	Dashboard.init();
-});
+});	

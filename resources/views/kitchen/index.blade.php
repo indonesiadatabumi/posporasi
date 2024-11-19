@@ -11,7 +11,7 @@
 @push('scripts')
 <style>
     body {
-        padding-top: 20px; /* Sesuaikan dengan tinggi navbar */
+        padding-top: 25px; /* Sesuaikan dengan tinggi navbar */
     }
     .custom-title {
         font-size: 1rem;  
@@ -29,6 +29,23 @@
     .custom-text {
         font-size: 1rem;  
     }
+    .nav-item .nav-link .icon-wrapper {
+    display: flex;
+    flex-direction: column;  /* Menyusun ikon dan teks secara vertikal */
+    align-items: center;  /* Menjaga ikon dan teks tetap terpusat secara horizontal */
+    gap: 4px;  /* Memberikan jarak antara ikon dan teks */
+}
+
+.nav-item .nav-link .icon-wrapper i {
+    font-size: 24px;  /* Ukuran ikon */
+}
+
+.nav-item .nav-link .icon-wrapper span {
+    font-size: 14px;  /* Ukuran teks */
+    text-align: center;  /* Menjaga teks agar terpusat di bawah ikon */
+    white-space: nowrap;  /* Mencegah teks membungkus jika terlalu panjang */
+}
+
 </style>
 <script src="/assets/js/demo/pos-menu-stock.demo.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Tambahkan SweetAlert CDN -->
@@ -94,7 +111,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="/pembelian" class="nav-link fs-5">
                     <i class="fa fa-shopping-cart"></i> Order
                 </a>
@@ -103,7 +120,7 @@
                 <a href="/pembayaran" class="nav-link fs-5">
                     <i class="fa fa-cash-register"></i> Checkout
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a href="/kitchen" class="nav-link fs-5">
                     <i class="fa fa-table-list"></i> Stock

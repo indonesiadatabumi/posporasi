@@ -84,6 +84,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rekapkasir/data', [RekapKasirController::class, 'data'])->name('rekapkasir.data');
         Route::get('/rekapkasir/export-pdf', [RekapKasirController::class, 'exportPDF'])->name('rekapkasir.exportPDF');
         
+
+        Route::resource('printer', PrinterController::class);
+        Route::get('/', [PrinterController::class, 'index'])->name('index');
+        Route::post('/', [PrinterController::class, 'store'])->name('store');
+        Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
+        Route::get('/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('setDefault');   
+        Route::post('/printer/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('printer.setDefault');
+    
+    
     });
 
 
@@ -99,14 +108,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pembayaran/{id}/print-pdf', [PembayaranController::class, 'printPDF'])->name('pembayaran.print-pdf');
 
     });
-
-    Route::resource('printer', PrinterController::class);
-    Route::get('/', [PrinterController::class, 'index'])->name('index');
-    Route::post('/', [PrinterController::class, 'store'])->name('store');
-    Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
-    Route::get('/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('setDefault');   
-    Route::post('/printer/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('printer.setDefault');
-    // Kitchen Routes
 
 
     

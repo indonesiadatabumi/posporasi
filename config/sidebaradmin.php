@@ -91,6 +91,11 @@ return [
 			'url' => '/resto',
 			'route-name' => '/resto'
 	],[
+		'icon' => 'fa fa-print',
+			'title' => 'Printer Setting',
+			'url' => '/printer',
+			'route-name' => '/printer'
+	],[
 		'icon' => 'fa fa-sign-out',
 			'title' => 'Logout',
 			'url' => '/logout',

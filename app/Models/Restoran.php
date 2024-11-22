@@ -16,4 +16,8 @@ class Restoran extends Model
         'alamat', 
         'nomor_telepon'
     ];
+    public function printer()
+    {
+        return $this->hasMany(Printer::class, 'id_resto');
+    }
 }

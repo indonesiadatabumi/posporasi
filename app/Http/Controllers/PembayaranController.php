@@ -9,7 +9,10 @@ use App\Models\Meja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-use Mike42\Escpos\Printer;
+use Mike42\Escpos\Printer as EscposPrinter; 
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use App\Models\Printer;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
 use Mike42\Escpos\EscposImage;
@@ -169,110 +172,131 @@ public function generateNomorStruk()
             return response()->json(['message' => 'Terjadi kesalahan saat memproses pembayaran: ' . $e->getMessage()], 500);
         }
     }
-    
     public function printReceipt(Request $request, $pembelianId)
-{
-    $pembelian = Pembelian::with('detail.produk')->find($pembelianId);
-    $restoran = Auth::user()->restoran;
-
-    if (!$pembelian) {
-        return response()->json(['message' => 'Pembelian tidak ditemukan'], 404);
-    }
-
-    $pembayaran = Pembayaran::where('pembelian_id', $pembelianId)->first();
-
-    if (!$pembayaran) {
-        return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
-    }
-
-    $nomor_struk = $pembayaran->nomor_struk;
-    $amountPaid = $request->query('amountPaid', 0);
-    $change = $request->query('change', 0);
-
-    $jenisPesanan = $pembelian->jenis_pesanan ?? 'N/A';  
-    if ($jenisPesanan == 'dine-in') {
-        $jenisPesanan = 'Dine In';
-    } elseif ($jenisPesanan == 'take-away') {
-        $jenisPesanan = 'Take Away';
-    }
-
-    $printerName = $request->input('printer_name', config('app.default_printer_name', 'XP-58C'));
-
-    try {
-        $connector = new WindowsPrintConnector($printerName);
-        $printer = new Printer($connector);
-
-        $printer->setFont(Printer::FONT_B);
-        $printer->setTextSize(2, 2);
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("=== {$restoran->nama_resto} ===\n");
-
-        $printer->setFont(Printer::FONT_A);
-        $printer->setTextSize(1, 1);
-        $printer->text("Alamat: {$restoran->alamat}\n");
-        $printer->text("Telp: {$restoran->nomor_telepon}\n");
-        $printer->text("================================================\n");
-
-        $printer->setJustification(Printer::JUSTIFY_LEFT);
-        $printer->text("Customer      : " . $pembelian->pembeli . "\n");
-        $printer->text("No. Struk     : {$nomor_struk}\n");  
-        $printer->text("Jenis Pesanan : {$jenisPesanan}\n"); 
-        $printer->text("Tanggal       : " . now()->format('d-m-Y') . "\n");
-        $printer->text("================================================\n");
-
-        $subtotal = 0;
-
-        foreach ($pembelian->detail as $detail) {
-            $namaProduk = $detail->produk->nama_produk;
-            $jumlah = $detail->jumlah;
-            $hargaSatuan = number_format($detail->harga_satuan, 0, ',', '.');
-
-            $printer->text(
-                str_pad($jumlah, 5, " ", STR_PAD_RIGHT) . 
-                str_pad($namaProduk, 35, " ") . 
-                str_pad($hargaSatuan, 7, " ", STR_PAD_LEFT) . "\n"
-            );
-
-            $subtotal += $detail->jumlah * $detail->harga_satuan;
+    {
+        $pembelian = Pembelian::with('detail.produk')->find($pembelianId);
+        $restoran = Auth::user()->restoran;
+    
+        if (!$pembelian) {
+            return response()->json(['message' => 'Pembelian tidak ditemukan'], 404);
         }
-
-        $printer->text("------------------------------------------------\n");
-
-        $pajak = $subtotal * 0.10;
-        $grandTotal = $subtotal + $pajak;
-
-        $printer->setJustification(Printer::JUSTIFY_RIGHT);
-        $printer->text("Subtotal     : " . str_pad(number_format($subtotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-        $printer->text("Pajak        : " . str_pad(number_format($pajak, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-        $printer->text("---------------------------------\n");
-        $printer->text("Total Bayar  : " . str_pad(number_format($grandTotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-        $printer->text("TUNAI        : " . str_pad(number_format($amountPaid, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-        $printer->text("---------------------------------\n");
-        $printer->text("Kembalian    : " . str_pad(number_format($change, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("================================================\n");
-        $printer->text("Terima kasih atas kunjungan Anda!\n");
-        $printer->text("Mohon simpan struk ini sebagai bukti pembayaran\n");
-
-        $filePathQRCode = 'qrcode/' . $nomor_struk . '.png';
-        if (Storage::disk('public')->exists($filePathQRCode)) {
-            $filePath = storage_path('app/public/' . $filePathQRCode);
-            $escposImage = EscposImage::load($filePath, false);
-            $printer->bitImage($escposImage);
-        } else {
-            return response()->json(['message' => 'QR Code tidak ditemukan.'], 500);
+    
+        $pembayaran = Pembayaran::where('pembelian_id', $pembelianId)->first();
+    
+        if (!$pembayaran) {
+            return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
         }
-
-        $printer->cut(); 
-        $printer->text("\n\n\n\n");
-        $printer->close();
-
+    
+        $nomor_struk = $pembayaran->nomor_struk;
+        $amountPaid = $request->query('amountPaid', 0);
+        $change = $request->query('change', 0);
+    
+        $jenisPesanan = $pembelian->jenis_pesanan ?? 'N/A';  
+        if ($jenisPesanan == 'dine-in') {
+            $jenisPesanan = 'Dine In';
+        } elseif ($jenisPesanan == 'take-away') {
+            $jenisPesanan = 'Take Away';
+        }
+    
+        $defaultPrinter = Printer::where('is_default', 1)->first();
+        if (!$defaultPrinter) {
+            return response()->json(['message' => 'Printer default tidak ditemukan'], 404);
+        }
+    
+        try {
+            if ($defaultPrinter->koneksi === 'smb') {
+                if (empty($defaultPrinter->device) || empty($defaultPrinter->share_name)) {
+                    return response()->json(['message' => 'Konfigurasi printer SMB tidak lengkap'], 400);
+                }
+                $printerConnector = "smb://{$defaultPrinter->device}/{$defaultPrinter->share_name}";
+                $connector = new WindowsPrintConnector($printerConnector);
+            } elseif ($defaultPrinter->koneksi === 'network') {
+                if (empty($defaultPrinter->ip_printer) || empty($defaultPrinter->port)) {
+                    return response()->json(['message' => 'Konfigurasi printer jaringan tidak lengkap'], 400);
+                }
+                $connector = new NetworkPrintConnector($defaultPrinter->ip_printer, $defaultPrinter->port);
+            } elseif ($defaultPrinter->koneksi === 'usb') {
+                $printerConnector = "/dev/usb/lp0"; 
+                $connector = new FilePrintConnector($printerConnector);
+            } else {
+                return response()->json(['message' => 'Koneksi printer tidak valid'], 400);
+            }
+    
+            $thermalPrinter = new EscposPrinter($connector);
+            $thermalPrinter->setFont(EscposPrinter::FONT_B);
+            $thermalPrinter->setTextSize(2, 2);
+            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_CENTER);
+            $thermalPrinter->text("=== {$restoran->nama_resto} ===\n");
+    
+            $thermalPrinter->setFont(EscposPrinter::FONT_A);
+            $thermalPrinter->setTextSize(1, 1);
+            $thermalPrinter->text("Alamat: {$restoran->alamat}\n");
+            $thermalPrinter->text("Telp: {$restoran->nomor_telepon}\n");
+            $thermalPrinter->text("================================================\n");
+    
+            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_LEFT);
+            $thermalPrinter->text("Customer      : " . $pembelian->pembeli . "\n");
+            $thermalPrinter->text("No. Struk     : {$nomor_struk}\n");  
+            $thermalPrinter->text("Jenis Pesanan : {$jenisPesanan}\n"); 
+            $thermalPrinter->text("Tanggal       : " . now()->format('d-m-Y') . "\n");
+            $thermalPrinter->text("================================================\n");
+    
+            $subtotal = 0;
+    
+            foreach ($pembelian->detail as $detail) {
+                $namaProduk = $detail->produk->nama_produk;
+                $jumlah = $detail->jumlah;
+                $hargaSatuan = number_format($detail->harga_satuan, 0, ',', '.');
+    
+                $thermalPrinter->text(
+                    str_pad($jumlah, 5, " ", STR_PAD_RIGHT) . 
+                    str_pad($namaProduk, 35, " ") . 
+                    str_pad($hargaSatuan, 7, " ", STR_PAD_LEFT) . "\n"
+                );
+    
+                $subtotal += $detail->jumlah * $detail->harga_satuan;
+            }
+    
+            $thermalPrinter->text("------------------------------------------------\n");
+            $pajak = $subtotal * 0.10;  
+            $grandTotal = $subtotal + $pajak;
+    
+            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_RIGHT);
+            $thermalPrinter->text("Subtotal     : " . str_pad(number_format($subtotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+            $thermalPrinter->text("Pajak        : " . str_pad(number_format($pajak, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+            $thermalPrinter->text("---------------------------------\n");
+            $thermalPrinter->text("Total Bayar  : " . str_pad(number_format($grandTotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+            $thermalPrinter->text("TUNAI        : " . str_pad(number_format($amountPaid, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+            $thermalPrinter->text("---------------------------------\n");
+            $thermalPrinter->text("Kembalian    : " . str_pad(number_format($change, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+    
+            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_CENTER);
+            $thermalPrinter->text("================================================\n");
+            $thermalPrinter->text("Terima kasih atas kunjungan Anda!\n");
+            $thermalPrinter->text("Mohon simpan struk ini sebagai bukti pembayaran\n");
+    
+            $filePathQRCode = 'qrcode/' . $nomor_struk . '.png';
+            if (Storage::disk('public')->exists($filePathQRCode)) {
+                $filePath = storage_path('app/public/' . $filePathQRCode);
+                $escposImage = EscposImage::load($filePath, false);
+                $thermalPrinter->bitImage($escposImage);
+            } else {
+                return response()->json(['message' => 'QR Code tidak ditemukan.'], 500);
+            }
+    
+            $thermalPrinter->cut(); 
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        } finally {
+            if (isset($thermalPrinter)) {
+                $thermalPrinter->close();
+            }
+        }
+    
         return response()->json(['message' => 'Struk berhasil dicetak!']);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Terjadi kesalahan saat mencetak: ' . $e->getMessage()], 500);
     }
-}
+    
+
 
     // public function printPDF($pembelianId)
     // {

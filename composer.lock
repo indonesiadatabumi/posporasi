@@ -2638,7 +2638,7 @@
                     "email": "michael.billington@gmail.com"
                 }
             ],
-            "description": "PHP receipt printer library for use with ESC/POS-compatible thermal and impact printers",
+            "description": "PHP receipt printer library for use with ESC/POS-compatible thermal and impact printer",
             "homepage": "https://github.com/mike42/escpos-php",
             "keywords": [
                 "ESC-POS",

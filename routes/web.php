@@ -26,6 +26,7 @@ use App\Http\Controllers\RekapKasirController;
 use App\Http\Controllers\KitchenOrderController;
 use App\Http\Controllers\RestoranController;
 use App\Http\Controllers\LiatUserController;
+use App\Http\Controllers\PrinterController;
 
 Route::middleware(['auth'])->group(function () {
 
@@ -99,7 +100,16 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
+    Route::resource('printer', PrinterController::class);
+    Route::get('/', [PrinterController::class, 'index'])->name('index');
+    Route::post('/', [PrinterController::class, 'store'])->name('store');
+    Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
+    Route::get('/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('setDefault');   
+    Route::post('/printer/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('printer.setDefault');
     // Kitchen Routes
+
+
+    
     Route::middleware('permission:access_kitchen')->group(function () {
         Route::get('/kitchen', [KitchenController::class, 'index'])->name('kitchen.index');
     });

@@ -12,7 +12,7 @@ class MUserController extends Controller
     public function index()
     {
         $users = User::where('id_resto', Auth::user()->restoran->id)
-                    ->whereIn('role', ['kasir', 'kitchen']) // Memfilter berdasarkan role
+                    ->whereIn('role', ['kasir', 'kitchen'])  
                     ->get();
         
         return view('users.index', compact('users'));

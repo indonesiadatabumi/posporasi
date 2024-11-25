@@ -6,25 +6,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Fungsi untuk memperbarui tampilan input IP dan Port
             const koneksiSelect = document.querySelector('select[name="koneksi"]');
             const ipInput = document.querySelector('input[name="ip_printer"]');
             const portInput = document.querySelector('input[name="port_printer"]');
             
             function toggleNetworkInputs() {
                 if (koneksiSelect.value === 'network') {
-                    ipInput.closest('.col-6').style.display = 'block'; // Menampilkan input IP
-                    portInput.closest('.col-6').style.display = 'block'; // Menampilkan input Port
+                    ipInput.closest('.col-6').style.display = 'block';  
+                    portInput.closest('.col-6').style.display = 'block';  
                 } else {
-                    ipInput.closest('.col-6').style.display = 'none'; // Menyembunyikan input IP
-                    portInput.closest('.col-6').style.display = 'none'; // Menyembunyikan input Port
+                    ipInput.closest('.col-6').style.display = 'none'; 
+                    portInput.closest('.col-6').style.display = 'none';  
                 }
             }
 
-            // Menambahkan event listener untuk perubahan koneksi
             koneksiSelect.addEventListener('change', toggleNetworkInputs);
             
-            // Memanggil fungsi untuk memulai tampilan yang sesuai ketika halaman pertama kali dimuat
             toggleNetworkInputs();
         });
     </script>

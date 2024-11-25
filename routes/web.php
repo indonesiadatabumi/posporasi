@@ -72,7 +72,6 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('/pengeluaran', PengeluaranController::class);
     });
 
-    // Pembelian Routes
     Route::middleware('permission:access_pembelian')->group(function () {
         Route::get('/pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
         Route::post('/pembelian/store', [PembelianController::class, 'store'])->name('pembelian.store');
@@ -83,20 +82,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rekapkasir', [RekapKasirController::class, 'index'])->name('rekapkasir.index');
         Route::get('/rekapkasir/data', [RekapKasirController::class, 'data'])->name('rekapkasir.data');
         Route::get('/rekapkasir/export-pdf', [RekapKasirController::class, 'exportPDF'])->name('rekapkasir.exportPDF');
-        
 
         Route::resource('printer', PrinterController::class);
-        Route::get('/', [PrinterController::class, 'index'])->name('index');
-        Route::post('/', [PrinterController::class, 'store'])->name('store');
         Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
         Route::get('/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('setDefault');   
         Route::post('/printer/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('printer.setDefault');
-    
-    
+        
     });
 
 
-    // Pembayaran Routes
     Route::middleware('permission:access_pembayaran')->group(function () {
         Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
         Route::get('/pembayaran/ambil/{id}', [PembayaranController::class, 'ambilPembelian']);

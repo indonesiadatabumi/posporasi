@@ -82,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rekapkasir', [RekapKasirController::class, 'index'])->name('rekapkasir.index');
         Route::get('/rekapkasir/data', [RekapKasirController::class, 'data'])->name('rekapkasir.data');
         Route::get('/rekapkasir/export-pdf', [RekapKasirController::class, 'exportPDF'])->name('rekapkasir.exportPDF');
+        
 
         Route::resource('printer', PrinterController::class);
         Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');

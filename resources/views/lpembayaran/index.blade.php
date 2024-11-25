@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div class="card-header h6 mb-0 bg-none p-0 d-flex justify-content-between align-items-center">
-                <a href="{{ route('lppembayaran.export_pdf') }}" id="export-pdf" class="btn btn-danger">Export PDF</a>
+                <a href="{{ route('lpembayaran.export_pdf') }}" id="export-pdf" class="btn btn-danger">Export PDF</a>
             </div>
             <div class="table-responsive  mt-3">
                 <table class="table table-hover table-striped table-bordered text-nowrap align-middle">
@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    @includeIf('lppembayaran.form')
+    @includeIf('lpembayaran.form')
 @endsection
 
 @push('scripts')
@@ -76,7 +76,7 @@
             function reloadTable() {
                 const startDate = $('#start_date').val();
                 const endDate = $('#end_date').val();
-                table.ajax.url('{{ route('lppembayaran.data') }}' + '?start_date=' + startDate + '&end_date=' +
+                table.ajax.url('{{ route('lpembayaran.data') }}' + '?start_date=' + startDate + '&end_date=' +
                     endDate).load();
             }
 
@@ -86,7 +86,7 @@
                 serverSide: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('lppembayaran.data') }}',
+                    url: '{{ route('lpembayaran.data') }}',
                     data: function(d) {
                         d.start_date = $('#start_date').val();
                         d.end_date = $('#end_date').val();

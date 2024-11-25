@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-6">
                     <label class="form-label">Device</label>
-                    <input type="text" class="form-control" name="device" placeholder="Contoh: Printer T1">
+                    <input type="text" class="form-control" name="device" placeholder="Contoh: PC-1">
                 </div>
             </div>
             <div class="row mb-3">

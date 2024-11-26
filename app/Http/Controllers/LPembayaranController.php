@@ -16,14 +16,34 @@ class LPembayaranController extends Controller
         return view('lpembayaran.index');
     }
 
-    public function data()
+    public function data(Request $request)
     {
-        $pembayaran = Pembayaran::where('id_resto', Auth::user()->restoran->id)->get();
+        // Validasi filter tanggal
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $restoranId = Auth::user()->restoran->id;
+
+        // Query untuk mendapatkan data pembayaran
+        $query = Pembayaran::where('id_resto', $restoranId);
+
+        // Filter berdasarkan start_date dan end_date jika ada
+        if ($start_date = $request->input('start_date')) {
+            $query->whereDate('created_at', '>=', Carbon::parse($start_date)->toDateString());
+        }
+
+        if ($end_date = $request->input('end_date')) {
+            $query->whereDate('created_at', '<=', Carbon::parse($end_date)->toDateString());
+        }
+
+        $pembayaran = $query->get();
 
         return DataTables::of($pembayaran)
             ->addIndexColumn()
             ->addColumn('tanggal_transaksi', function ($row) {
-                return $row->created_at ? $row->created_at->format('d-m-Y') : '-'; 
+                return $row->created_at ? $row->created_at->format('d-m-Y') : '-';
             })
             ->addColumn('aksi', function ($row) {
                 return '';  
@@ -31,34 +51,27 @@ class LPembayaranController extends Controller
             ->make(true);
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'metode_pembayaran' => 'required|string|max:50',
-            'subtotal' => 'required|numeric',
-            'pajak' => 'required|numeric',
-            'total_pembayaran' => 'required|numeric',
-            'nomor_struk' => 'nullable|string|max:50',
-        ]);
-
-        $validatedData['id_resto'] = Auth::user()->restoran->id;
-
-        Pembayaran::create($validatedData);
-
-        return response()->json(['success' => 'Pembayaran berhasil ditambahkan.']);
-    }
     public function cetakPdf(Request $request)
     {
+        // Validasi filter tanggal
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
     
-        $query = Pembayaran::where('id_resto', Auth::user()->restoran->id);
+        $restoranId = Auth::user()->restoran->id;
+    
+        // Query untuk filter data berdasarkan tanggal
+        $query = Pembayaran::where('id_resto', $restoranId);
     
         if ($start_date) {
-            $query->whereDate('created_at', '>=', $start_date);
+            $query->whereDate('created_at', '>=', Carbon::parse($start_date)->toDateString());
         }
         if ($end_date) {
-            $query->whereDate('created_at', '<=', $end_date);
+            $query->whereDate('created_at', '<=', Carbon::parse($end_date)->toDateString());
         }
     
         $pembayaran = $query->selectRaw('DATE(created_at) as tanggal_transaksi, 
@@ -77,12 +90,11 @@ class LPembayaranController extends Controller
             'totalSubtotal' => $totalSubtotal,
             'totalPajak' => $totalPajak,
             'totalPembayaran' => $totalPembayaran,
-            'current_date' => \Carbon\Carbon::now()->format('d-m-Y'),
+            'current_date' => Carbon::now()->format('d-m-Y'),
         ];
     
-        $pdf = PDF::loadView('lpembayaran.pdf', $data)->setPaper('a4', 'potrait');
+        $pdf = PDF::loadView('lpembayaran.pdf', $data)->setPaper('a4', 'portrait');
     
-        return $pdf->download('laporan_pembayaran_' . \Carbon\Carbon::now()->format('d_m_Y') . '.pdf');
+        return $pdf->download('laporan_pembayaran_' . Carbon::now()->format('d_m_Y') . '.pdf');
     }
-    
 }

@@ -154,7 +154,12 @@
             <img src="/assets/img/pos/logo.svg" width="30" height="30" alt="Pine & Dine" class="me-2">
             Pine & Dine
         </a>
-        <div class="navbar-collapse collapse">
+        <!-- Tombol toggle untuk navbar di perangkat mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Konten navbar yang dapat di-collapse -->
+        <div class="navbar-collapse collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a href="/pembelian" class="nav-link fs-5">
@@ -166,19 +171,10 @@
                         <i class="fa fa-cash-register"></i> Checkout
                     </a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a href="/kitchen" class="nav-link fs-5">
-                        <i class="fa fa-table-list"></i> Stock
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/kitchenorder" class="nav-link fs-5">
-                        <i class="fa fa-list-check"></i> Kitchen Order
-                    </a>
-                </li> --}}
             </ul>
         </div>
     </nav>
+    
 
     <!-- Main Content -->
     <div class="container-fluid mt-4">

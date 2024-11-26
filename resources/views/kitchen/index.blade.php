@@ -101,26 +101,18 @@
 
 @section('content')
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-3 fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-3">
     <a class="navbar-brand d-flex align-items-center" href="/dashboard" style="font-size: 1.5rem;">
         <img src="/assets/img/pos/logo.svg" width="30" height="30" alt="Pine & Dine" class="me-2">
         Pine & Dine
     </a>
+    <!-- Tombol toggle untuk navbar di perangkat mobile -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <!-- Konten navbar yang dapat di-collapse -->
+    <div class="navbar-collapse collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-            {{-- <li class="nav-item">
-                <a href="/pembelian" class="nav-link fs-5">
-                    <i class="fa fa-shopping-cart"></i> Order
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/pembayaran" class="nav-link fs-5">
-                    <i class="fa fa-cash-register"></i> Checkout
-                </a>
-            </li> --}}
             <li class="nav-item">
                 <a href="/kitchen" class="nav-link fs-5">
                     <i class="fa fa-table-list"></i> Stock
@@ -130,7 +122,7 @@
                 <a href="/kitchenorder" class="nav-link fs-5">
                     <i class="fa fa-list-check"></i> Kitchen Order
                 </a>
-            </li>   
+            </li>
         </ul>
     </div>
 </nav>

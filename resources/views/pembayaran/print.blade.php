@@ -5,34 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cetak Struk</title>
     <style>
-        /* Pengaturan halaman untuk mencetak */
         @page {
             margin: 0;
-            size: 58mm auto; /* Ukuran lebar kertas thermal */
+            size: 58mm auto;  
         }
 
-        /* Mengatur body untuk struk */
         body.struk {
-            width: 58mm;   /* Set lebar body sesuai dengan lebar kertas */
-            margin: 0;     /* Hapus margin */
-            padding: 0;    /* Hapus padding tambahan */
-            font-size: 10px; /* Sesuaikan ukuran font untuk menghindari teks yang terlalu besar */
-            font-family: monospace; /* Menggunakan font monospace untuk tampilan struk */
+            width: 58mm;    
+            margin: 0;    
+            padding: 0;    
+            font-size: 10px;  
+            font-family: monospace;  
         }
 
-        /* Mengatur elemen-elemen di dalam struk */
         body.struk .sheet {
-            padding: 2mm;  /* Padding kecil agar tidak terlalu banyak ruang kosong */
-            box-sizing: border-box; /* Pastikan ukuran box sesuai dengan halaman */
-            overflow: hidden; /* Menghindari elemen yang meluap */
+            padding: 2mm;   
+            box-sizing: border-box;  
+            overflow: hidden;  
         }
 
-        /* Pengaturan teks dalam struk */
         .txt-left { text-align: left; }
         .txt-center { text-align: center; }
         .txt-right { text-align: right; }
 
-        /* Pengaturan elemen pada layar (untuk preview) */
         @media screen {
             body { background: #e0e0e0; font-family: monospace; }
             .sheet {
@@ -42,7 +37,6 @@
             }
         }
 
-        /* Pengaturan saat mencetak */
         @media print {
             body { font-family: monospace; }
             body.struk { width: 58mm; text-align: left; }
@@ -54,11 +48,11 @@
 
         table {
             width: 100%;
-            table-layout: fixed; /* Pastikan lebar tabel tidak melebihi batas */
+            table-layout: fixed;  
         }
 
         td, th {
-            font-size: 9px; /* Ukuran font kecil untuk menyesuaikan ruang */
+            font-size: 9px;  
         }
     </style>
 </head>

@@ -11,27 +11,48 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/pembelian.css') }}">
     <style>
+        .sticky-navbar .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    padding: 8px 4px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.sticky-navbar .nav-link .icon-wrapper i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.sticky-navbar .nav-link .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
         .product .card {
             display: flex;
             flex-direction: column;
             height: 100%;
         }
+
         .nav-item .nav-link .icon-wrapper {
-    display: flex;
-    flex-direction: column;  
-    align-items: center;  
-    gap: 4px;   
-}
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
 
-.nav-item .nav-link .icon-wrapper i {
-    font-size: 24px;  
-}
+        .nav-item .nav-link .icon-wrapper i {
+            font-size: 24px;
+        }
 
-.nav-item .nav-link .icon-wrapper span {
-    font-size: 14px;   
-    text-align: center;   
-    white-space: nowrap;   
-}
+        .nav-item .nav-link .icon-wrapper span {
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+        }
 
 
         .custom-bg {
@@ -70,61 +91,61 @@
             display: flex;
             flex-direction: column;
         }
+
         .quantity-controls {
-    display: flex;
-    align-items: center;   
-    gap: 12px;  
-}
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-.quantity-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px; 
-}
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.adjust-quantity {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;   
-    height: 28px;  
-    font-size: 14px;  
-    border-radius: 4px;  
-    background-color: #00acac;  
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
+        .adjust-quantity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+            border-radius: 4px;
+            background-color: #00acac;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
 
-.adjust-quantity:hover {
-    background-color: #0cb4cb;  
-    transform: scale(1.1);  
-}
+        .adjust-quantity:hover {
+            background-color: #0cb4cb;
+            transform: scale(1.1);
+        }
 
-.adjust-quantity:active {
-    background-color: #09c3a7;  
-    transform: scale(0.95);  
-}
+        .adjust-quantity:active {
+            background-color: #09c3a7;
+            transform: scale(0.95);
+        }
 
-.adjust-quantity:focus {
-    outline: none;  
-    box-shadow: 0 0 0 2px rgba(2, 164, 170, 0.5);  
-}
+        .adjust-quantity:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(2, 164, 170, 0.5);
+        }
 
-.adjust-quantity:disabled {
-    background-color: #d9534f; 
-    cursor: not-allowed;
-}
+        .adjust-quantity:disabled {
+            background-color: #d9534f;
+            cursor: not-allowed;
+        }
 
 
-.product-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-}
-
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
     </style>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-3">
@@ -133,7 +154,8 @@
             Pine & Dine
         </a>
         <!-- Tombol toggle untuk navbar di perangkat mobile -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <!-- Konten navbar yang dapat di-collapse -->
@@ -152,44 +174,36 @@
             </ul>
         </div>
     </nav>
-    
     <!-- Main Content -->
     <div class="container-fluid mt-4">
-        <div class="row">
+        <div class="row g-3">
             <!-- Kategori Menu -->
             <div class="col-md-1">
-                <div class="col-md-1">
-                    <div class="sticky-navbar">
-                        <ul class="nav flex-column nav-pills">
+                <div class="sticky-navbar">
+                    <ul class="nav flex-column nav-pills text-center">
+                        <li class="nav-item">
+                            <button class="nav-link active p-2" data-filter="all">
+                                <i class="fa fa-home"></i>
+                                <div class="text-truncate">Semua</div>
+                            </button>
+                        </li>
+                        @foreach ($kategori as $item)
                             <li class="nav-item">
-                                <button class="nav-link active" data-filter="all">
-                                    <div class="icon-wrapper">
-                                        <i class="fa fa-home"></i>
-                                        <span>Semua Menu</span>
-                                    </div>
+                                <button class="nav-link p-2" data-filter="{{ $item->id }}">
+                                    <i class="fa {{ $item->icon }}"></i>
+                                    <div class="text-truncate">{{ $item->nama_kategori }}</div>
                                 </button>
                             </li>
-                            @foreach ($kategori as $item)
-                                <li class="nav-item">
-                                    <button class="nav-link" data-filter="{{ $item->id }}">
-                                        <div class="icon-wrapper">
-                                            <i class="fa {{ $item->icon }}"></i>
-                                            <span>{{ $item->nama_kategori }}</span>
-                                        </div>
-                                    </button>
-                                </li>
-                            @endforeach
-                        </ul>
-                        
-                        
-                    </div>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
-            <!-- Produk dan Keranjang -->
+    
+            <!-- Produk -->
             <div class="col-md-8">
-                <div class="row">
+                <div class="row g-3">
                     @foreach ($produk as $item)
-                        <div class="col-md-4 mb-4 product" data-kategori="{{ $item->id_kategori }}">
+                        <div class="col-md-4 product" data-kategori="{{ $item->id_kategori }}">
                             <div class="card shadow-sm">
                                 <img src="{{ asset('storage/' . $item->foto) }}" class="card-img-top"
                                     alt="{{ $item->nama_produk }}">
@@ -215,16 +229,14 @@
                     @endforeach
                 </div>
             </div>
+    
+            <!-- Keranjang -->
             <div class="col-md-3">
                 <div class="cart border rounded shadow-sm p-4 bg-light">
-                    <h4 class="mb-4 text-center text-success" >Keranjang Pembelian</h4>
-
-                    <!-- Daftar item di keranjang -->
+                    <h4 class="mb-4 text-center text-success">Keranjang Pembelian</h4>
                     <div id="cart-items" class="mb-4">
                         <!-- Item akan ditambahkan di sini -->
                     </div>
-
-                    <!-- Ringkasan harga -->
                     <div class="cart-summary mb-4">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Total:</span>
@@ -239,8 +251,6 @@
                             <span id="final-price" class="text-success">Rp 0</span>
                         </div>
                     </div>
-
-                    <!-- Tipe Pesanan -->
                     <div class="mb-4">
                         <label for="order-type" class="form-label fw-semibold">Tipe Pesanan:</label>
                         <select class="form-select" id="order-type" required>
@@ -249,8 +259,6 @@
                             <option value="take-away">Take Away</option>
                         </select>
                     </div>
-
-                    <!-- Pilihan Meja (tersembunyi jika tidak dibutuhkan) -->
                     <div class="mb-4" id="meja-container" style="display: none;">
                         <label for="meja-select" class="form-label fw-semibold">Pilih Meja:</label>
                         <select class="form-select" id="meja-select" required>
@@ -264,21 +272,17 @@
                             @endforeach
                         </select>
                     </div>
-
-                    <!-- Nama Pembeli -->
                     <div class="mb-4">
                         <label for="customer-name" class="form-label fw-semibold">Nama Pembeli:</label>
-                        <input type="text" class="form-control" id="customer-name" placeholder="Masukkan nama pembeli"
-                            required>
+                        <input type="text" class="form-control" id="customer-name"
+                            placeholder="Masukkan nama pembeli" required>
                     </div>
-
-                    <!-- Tombol Checkout -->
                     <button id="checkout-btn" class="btn btn-success w-100">Checkout</button>
                 </div>
             </div>
-
         </div>
     </div>
+    
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -420,73 +424,73 @@
                 });
 
                 document.getElementById('checkout-btn').addEventListener('click', function() {
-    const checkoutBtn = this; 
-    checkoutBtn.disabled = true; 
+                    const checkoutBtn = this;
+                    checkoutBtn.disabled = true;
 
-    const customerName = document.getElementById('customer-name').value;
-    const selectedMeja = document.getElementById('meja-select').value;
+                    const customerName = document.getElementById('customer-name').value;
+                    const selectedMeja = document.getElementById('meja-select').value;
 
-    if (!customerName) {
-        alert('Silakan masukkan nama pembeli.');
-        checkoutBtn.disabled = false; 
-        return;
-    }
-    if (orderTypeSelect.value === 'dine-in' && !selectedMeja) {
-        alert('Silakan pilih meja.');
-        checkoutBtn.disabled = false; 
-        return;
-    }
-    if (!cartItems.length) {
-        alert('Keranjang pembelian kosong.');
-        checkoutBtn.disabled = false;  
-        return;
-    }
+                    if (!customerName) {
+                        alert('Silakan masukkan nama pembeli.');
+                        checkoutBtn.disabled = false;
+                        return;
+                    }
+                    if (orderTypeSelect.value === 'dine-in' && !selectedMeja) {
+                        alert('Silakan pilih meja.');
+                        checkoutBtn.disabled = false;
+                        return;
+                    }
+                    if (!cartItems.length) {
+                        alert('Keranjang pembelian kosong.');
+                        checkoutBtn.disabled = false;
+                        return;
+                    }
 
-    const cartData = {
-        customer_name: customerName,
-        jenis_pesanan: orderTypeSelect.value,
-        meja_id: orderTypeSelect.value === 'dine-in' ? selectedMeja : null,
-        items: cartItems.map(item => ({
-            id: item.id,
-            quantity: item.quantity,
-            price: item.price
-        })),
-        total_price: finalPrice,
-        status: 'pending'
-    };
+                    const cartData = {
+                        customer_name: customerName,
+                        jenis_pesanan: orderTypeSelect.value,
+                        meja_id: orderTypeSelect.value === 'dine-in' ? selectedMeja : null,
+                        items: cartItems.map(item => ({
+                            id: item.id,
+                            quantity: item.quantity,
+                            price: item.price
+                        })),
+                        total_price: finalPrice,
+                        status: 'pending'
+                    };
 
-    fetch('/pembelian/checkout', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify(cartData)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Gagal melakukan checkout');
-        return response.json();
-    })
-    .then(data => {
-        Swal.fire({
-            icon: 'success',
-            title: 'Checkout Berhasil',
-            footer: '<a href="/pembayaran">Lanjut ke pembayaran?</a>'
-        }).then(() => {
-            window.location.href = '/pembelian';
-        });
-    })
-    .catch(error => {
-        Swal.fire({
-            title: 'Terjadi Kesalahan!',
-            text: error.message,
-            icon: 'error',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            checkoutBtn.disabled = false;  
-        });
-    });
-});
+                    fetch('/pembelian/checkout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify(cartData)
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Gagal melakukan checkout');
+                            return response.json();
+                        })
+                        .then(data => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Checkout Berhasil',
+                                footer: '<a href="/pembayaran">Lanjut ke pembayaran?</a>'
+                            }).then(() => {
+                                window.location.href = '/pembelian';
+                            });
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                title: 'Terjadi Kesalahan!',
+                                text: error.message,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                checkoutBtn.disabled = false;
+                            });
+                        });
+                });
 
             });
             document.querySelectorAll('.nav-link[data-filter]').forEach(button => {

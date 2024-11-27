@@ -98,11 +98,18 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/pembayaran', [PembayaranController::class, 'bayar']);
         Route::delete('/pembelian/{id}', [PembayaranController::class, 'destroy'])->name('pembelian.destroy');
         Route::get('/pembayaran/{id}', [PembayaranController::class, 'show']);
-        Route::get('/pembayaran/print-receipt/{id}', [PembayaranController::class, 'printReceipt'])->name('print.receipt');
+        // Route::get('/pembayaran/print-receipt/{id}', [PembayaranController::class, 'printReceipt'])->name('print.receipt');
         Route::get('/lpembayaran/export_pdf', [LPembayaranController::class, 'cetakPdf'])->name('lpembayaran.export_pdf');
-        Route::get('/pembayaran/{id}/print-pdf', [PembayaranController::class, 'printPDF'])->name('pembayaran.print-pdf');
+        // Route::get('/pembayaran/{id}/print-pdf', [PembayaranController::class, 'printPDF'])->name('pembayaran.print-pdf');
+        Route::get('/pembayaran/{id}/print', [PembayaranController::class, 'printReceipt'])->name('pembayaran.print');
+        Route::post('/pembayaran/{id}/bayar', [PembayaranController::class, 'bayar'])->name('pembayaran.bayar');
+        Route::post('/pembayaran/{id}/selesai', [PembayaranController::class, 'selesai'])->name('pembayaran.selesai');
+        Route::get('/pembayaran/{id}/cetak-struk', [PembayaranController::class, 'printReceipt'])->name('pembayaran.cetak-struk');
+        Route::post('/pembayaran/{id}/selesai', [PembayaranController::class, 'selesai'])->name('pembayaran.selesai');
+        Route::get('/pembayaran/{id}/print', [PembayaranController::class, 'printReceipt'])->name('pembayaran.print');
 
     });
+
 
 
     

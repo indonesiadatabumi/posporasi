@@ -68,52 +68,92 @@
                 @else
                 @foreach ($pembelian as $item)
                 @if ($item->status === 'pending')
-                <div class="col-6 col-md-4 col-lg-3 mb-3" onclick="getPembelian({{ $item->id }});">
-                    <div class="card shadow-sm h-100 mb-4 border-0">
-                        <div class="card-header bg-light text-center p-2">
-                            <p class="m-0 fw-bold">
-                                {{ optional($item->meja)->nomor_meja ? 'Meja: ' . $item->meja->nomor_meja : 'Take Away' }}
-                            </p>
-                        </div>
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold text-uppercase">{{ $item->pembeli }}</span>
-                                <span class="badge bg-{{ $item->status === 'pending' ? 'warning' : 'success' }}">
-                                    {{ ucfirst($item->status) }}
-                                </span>
+                    <div class="col-6 col-md-4 col-lg-3 mb-3" onclick="getPembelian({{ $item->id }});">
+                        <div class="card shadow-sm h-100 mb-4 border-0">
+                            <div class="card-header bg-light text-center p-2">
+                                <p class="m-0 fw-bold">
+                                    {{ optional($item->meja)->nomor_meja ? 'Meja: ' . $item->meja->nomor_meja : 'Take Away' }}
+                                </p>
                             </div>
-                            <hr class="my-2">
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted">Nomor Order:</small>
-                                <small class="text-dark">{{ $item->no_order }}</small>
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold text-uppercase">{{ $item->pembeli }}</span>
+                                    <span class="badge bg-warning">
+                                        {{ ucfirst($item->status) }}
+                                    </span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Nomor Order:</small>
+                                    <small class="text-dark">{{ $item->no_order }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Status:</small>
+                                    <small class="text-dark">{{ ucfirst($item->status) }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Tagihan:</small>
+                                    <small class="text-dark">Rp {{ number_format($item->total_harga, 2, ',', '.') }}</small>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted">Status:</small>
-                                <small class="text-dark">{{ ucfirst($item->status) }}</small>
+                            <div class="card-footer bg-light d-flex justify-content-between p-2 mt-2">
+                                <a href="/pembelian/{{ $item->id }}/edit" class="btn btn-info btn-sm flex-grow-1 me-1">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button type="button" class="btn btn-danger btn-sm flex-grow-1 ms-1" onclick="hapusPembelian({{ $item->id }})">
+                                    <i class="fas fa-trash-alt"></i> Hapus
+                                </button>
                             </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted">Tagihan:</small>
-                                <small class="text-dark">Rp {{ number_format($item->total_harga, 2, ',', '.') }}</small>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-light d-flex justify-content-between p-2 mt-2">
-                            <a href="/pembelian/{{ $item->id }}/edit" class="btn btn-info btn-sm flex-grow-1 me-1">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <button type="button" class="btn btn-danger btn-sm flex-grow-1 ms-1" onclick="hapusPembelian({{ $item->id }})">
-                                <i class="fas fa-trash-alt"></i> Hapus
-                            </button>
                         </div>
                     </div>
-                </div>
+                    @elseif ($item->status === 'paid')
+                    <div class="col-6 col-md-4 col-lg-3 mb-3">
+                        <div class="card shadow-sm h-100 mb-4 border-0">
+                            <div class="card-header bg-light text-center p-2">
+                                <p class="m-0 fw-bold">
+                                    {{ optional($item->meja)->nomor_meja ? 'Meja: ' . $item->meja->nomor_meja : 'Take Away' }}
+                                </p>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold text-uppercase">{{ $item->pembeli }}</span>
+                                    <span class="badge bg-success">
+                                        {{ ucfirst($item->status) }}
+                                    </span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Nomor Order:</small>
+                                    <small class="text-dark">{{ $item->no_order }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Status:</small>
+                                    <small class="text-dark">{{ ucfirst($item->status) }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Tagihan:</small>
+                                    <small class="text-dark">Rp {{ number_format($item->total_harga, 2, ',', '.') }}</small>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-light d-flex justify-content-between p-2 mt-2">
+                                <!-- Tombol Cetak Struk -->
+                                <a href="/pembayaran/{{ $item->id }}/print" class="btn btn-success btn-sm flex-grow-1 me-1">
+                                    <i class="fas fa-print"></i> Cetak Struk
+                                </a>
+                                <!-- Tombol Selesai -->
+                                <button type="button" class="btn btn-primary btn-sm flex-grow-1 ms-1" onclick="selesaiPembelian({{ $item->id }})">
+                                    <i class="fas fa-check"></i> Selesai
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 @endif
+                
             @endforeach
-            
                 @endif
             </div>
 
-            <!-- Edit Order Form -->
-            <div id="update-form" style="display: none; margin-top: 20px;"> <!-- tambahkan margin atas -->
+            <div id="update-form" style="display: none; margin-top: 20px;">  
                 <h4>Edit Pembelian</h4>
                 <form id="pembelian-update-form" action="{{ route('pembelian.update', 'placeholder-id') }}" method="POST">
                     @csrf
@@ -162,6 +202,7 @@
                     <p id="customer-name" class="form-control-plaintext text-muted">-</p>
                 </div>
                 <button id="pay-btn" class="btn btn-success w-100" disabled>Bayar</button>
+                </div>
             </div>
         </div>
         
@@ -275,6 +316,33 @@ function editPembelian(id) {
 $('#update-form').on('submit', function(e) {
     e.preventDefault();  
 });
+
+
+    function selesaiPembelian(id) {
+        if (confirm('Apakah Anda yakin ingin menyelesaikan transaksi ini?')) {
+            fetch(`/pembayaran/${id}/selesai`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({ status: 'completed' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Transaksi berhasil diselesaikan.');
+                    location.reload();   
+                } else {
+                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            });
+        }
+    }
 
 </script>
 

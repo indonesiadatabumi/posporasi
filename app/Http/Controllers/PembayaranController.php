@@ -42,14 +42,15 @@ public function generateNomorStruk()
     return $nomorStruk;
 }
 
-    public function index()
-    {
-        $pembelian = Pembelian::where('status', 'pending')
-            ->where('id_resto', Auth::user()->restoran->id ?? 0)
-            ->get();
+public function index()
+{
+    $pembelian = Pembelian::whereIn('status', ['pending', 'paid'])
+        ->where('id_resto', Auth::user()->restoran->id ?? 0)
+        ->get();
 
-        return view('pembayaran.index', compact('pembelian'));
-    }
+    return view('pembayaran.index', compact('pembelian'));
+}
+
 
     public function ambilPembelian($id)
     {
@@ -104,6 +105,7 @@ public function generateNomorStruk()
             'metode_pembayaran' => 'required|string|max:50',
             'pembelian_id' => 'required|integer',
             'total_pembayaran' => 'required|numeric|min:0',
+            'tunai' => 'required|numeric|min:0',  // Validasi untuk tunai
         ]);
     
         $pembelian = Pembelian::with('detail')->find($request->pembelian_id);
@@ -133,6 +135,7 @@ public function generateNomorStruk()
         $pembayaran->pajak = $pajak;
         $pembayaran->total_pembayaran = $totalPembayaran;
         $pembayaran->metode_pembayaran = $request->metode_pembayaran;
+        $pembayaran->tunai = $request->tunai;  
         $pembayaran->nomor_struk = $nomor_struk;
     
         try {
@@ -153,148 +156,152 @@ public function generateNomorStruk()
                 Meja::find($pembelian->meja->id)->update(['status' => 'tersedia']);
             }
     
-            $pembelian->status = 'completed';
+            $pembelian->status = 'paid';
             $pembelian->save();
     
             $qrcode = QrCode::format('png')->size(150)->generate($nomor_struk);
     
             $filePathQRCode = 'qrcode/' . $nomor_struk . '.png';
             Storage::disk('public')->put($filePathQRCode, $qrcode);
-
+    
+            // Menghitung kembalian
+            $kembalian = $request->tunai - $totalPembayaran;
     
             return response()->json([
                 'message' => 'Pembayaran berhasil diproses!',
                 'nomor_struk' => $nomor_struk,
                 'qrcode' => $filePathQRCode,
-                'file_struk' => $filePath ?? null  
+                'file_struk' => $filePath ?? null,
+                'kembalian' => $kembalian,  // Mengirimkan nilai kembalian
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Terjadi kesalahan saat memproses pembayaran: ' . $e->getMessage()], 500);
         }
     }
-    public function printReceipt(Request $request, $pembelianId)
-    {
-        $pembelian = Pembelian::with('detail.produk')->find($pembelianId);
-        $restoran = Auth::user()->restoran;
     
-        if (!$pembelian) {
-            return response()->json(['message' => 'Pembelian tidak ditemukan'], 404);
-        }
+    // public function printReceipt(Request $request, $pembelianId)
+    // {
+    //     $pembelian = Pembelian::with('detail.produk')->find($pembelianId);
+    //     $restoran = Auth::user()->restoran;
     
-        $pembayaran = Pembayaran::where('pembelian_id', $pembelianId)->first();
+    //     if (!$pembelian) {
+    //         return response()->json(['message' => 'Pembelian tidak ditemukan'], 404);
+    //     }
     
-        if (!$pembayaran) {
-            return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
-        }
+    //     $pembayaran = Pembayaran::where('pembelian_id', $pembelianId)->first();
     
-        $nomor_struk = $pembayaran->nomor_struk;
-        $amountPaid = $request->query('amountPaid', 0);
-        $change = $request->query('change', 0);
+    //     if (!$pembayaran) {
+    //         return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
+    //     }
     
-        $jenisPesanan = $pembelian->jenis_pesanan ?? 'N/A';  
-        if ($jenisPesanan == 'dine-in') {
-            $jenisPesanan = 'Dine In';
-        } elseif ($jenisPesanan == 'take-away') {
-            $jenisPesanan = 'Take Away';
-        }
+    //     $nomor_struk = $pembayaran->nomor_struk;
+    //     $amountPaid = $request->query('amountPaid', 0);
+    //     $change = $request->query('change', 0);
     
-        $defaultPrinter = Printer::where('is_default', 1)->first();
-        if (!$defaultPrinter) {
-            return response()->json(['message' => 'Printer default tidak ditemukan'], 404);
-        }
+    //     $jenisPesanan = $pembelian->jenis_pesanan ?? 'N/A';  
+    //     if ($jenisPesanan == 'dine-in') {
+    //         $jenisPesanan = 'Dine In';
+    //     } elseif ($jenisPesanan == 'take-away') {
+    //         $jenisPesanan = 'Take Away';
+    //     }
     
-        try {
-            if ($defaultPrinter->koneksi === 'smb') {
-                if (empty($defaultPrinter->device) || empty($defaultPrinter->share_name)) {
-                    return response()->json(['message' => 'Konfigurasi printer SMB tidak lengkap'], 400);
-                }
-                $printerConnector = "smb://{$defaultPrinter->device}/{$defaultPrinter->share_name}";
-                $connector = new WindowsPrintConnector($printerConnector);
-            } elseif ($defaultPrinter->koneksi === 'network') {
-                if (empty($defaultPrinter->ip_printer) || empty($defaultPrinter->port)) {
-                    return response()->json(['message' => 'Konfigurasi printer jaringan tidak lengkap'], 400);
-                }
-                $connector = new NetworkPrintConnector($defaultPrinter->ip_printer, $defaultPrinter->port);
-            } elseif ($defaultPrinter->koneksi === 'usb') {
-                $printerConnector = "/dev/usb/lp0"; 
-                $connector = new FilePrintConnector($printerConnector);
-            } else {
-                return response()->json(['message' => 'Koneksi printer tidak valid'], 400);
-            }
+    //     $defaultPrinter = Printer::where('is_default', 1)->first();
+    //     if (!$defaultPrinter) {
+    //         return response()->json(['message' => 'Printer default tidak ditemukan'], 404);
+    //     }
     
-            $thermalPrinter = new EscposPrinter($connector);
-            $thermalPrinter->setFont(EscposPrinter::FONT_B);
-            $thermalPrinter->setTextSize(2, 2);
-            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_CENTER);
-            $thermalPrinter->text("=== {$restoran->nama_resto} ===\n");
+    //     try {
+    //         if ($defaultPrinter->koneksi === 'smb') {
+    //             if (empty($defaultPrinter->device) || empty($defaultPrinter->share_name)) {
+    //                 return response()->json(['message' => 'Konfigurasi printer SMB tidak lengkap'], 400);
+    //             }
+    //             $printerConnector = "smb://{$defaultPrinter->device}/{$defaultPrinter->share_name}";
+    //             $connector = new WindowsPrintConnector($printerConnector);
+    //         } elseif ($defaultPrinter->koneksi === 'network') {
+    //             if (empty($defaultPrinter->ip_printer) || empty($defaultPrinter->port)) {
+    //                 return response()->json(['message' => 'Konfigurasi printer jaringan tidak lengkap'], 400);
+    //             }
+    //             $connector = new NetworkPrintConnector($defaultPrinter->ip_printer, $defaultPrinter->port);
+    //         } elseif ($defaultPrinter->koneksi === 'usb') {
+    //             $printerConnector = "/dev/usb/lp0"; 
+    //             $connector = new FilePrintConnector($printerConnector);
+    //         } else {
+    //             return response()->json(['message' => 'Koneksi printer tidak valid'], 400);
+    //         }
     
-            $thermalPrinter->setFont(EscposPrinter::FONT_A);
-            $thermalPrinter->setTextSize(1, 1);
-            $thermalPrinter->text("Alamat: {$restoran->alamat}\n");
-            $thermalPrinter->text("Telp: {$restoran->nomor_telepon}\n");
-            $thermalPrinter->text("================================================\n");
+    //         $thermalPrinter = new EscposPrinter($connector);
+    //         $thermalPrinter->setFont(EscposPrinter::FONT_B);
+    //         $thermalPrinter->setTextSize(2, 2);
+    //         $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_CENTER);
+    //         $thermalPrinter->text("=== {$restoran->nama_resto} ===\n");
     
-            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_LEFT);
-            $thermalPrinter->text("Customer      : " . $pembelian->pembeli . "\n");
-            $thermalPrinter->text("No. Struk     : {$nomor_struk}\n");  
-            $thermalPrinter->text("Jenis Pesanan : {$jenisPesanan}\n"); 
-            $thermalPrinter->text("Tanggal       : " . now()->format('d-m-Y') . "\n");
-            $thermalPrinter->text("================================================\n");
+    //         $thermalPrinter->setFont(EscposPrinter::FONT_A);
+    //         $thermalPrinter->setTextSize(1, 1);
+    //         $thermalPrinter->text("Alamat: {$restoran->alamat}\n");
+    //         $thermalPrinter->text("Telp: {$restoran->nomor_telepon}\n");
+    //         $thermalPrinter->text("================================================\n");
     
-            $subtotal = 0;
+    //         $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_LEFT);
+    //         $thermalPrinter->text("Customer      : " . $pembelian->pembeli . "\n");
+    //         $thermalPrinter->text("No. Struk     : {$nomor_struk}\n");  
+    //         $thermalPrinter->text("Jenis Pesanan : {$jenisPesanan}\n"); 
+    //         $thermalPrinter->text("Tanggal       : " . now()->format('d-m-Y') . "\n");
+    //         $thermalPrinter->text("================================================\n");
     
-            foreach ($pembelian->detail as $detail) {
-                $namaProduk = $detail->produk->nama_produk;
-                $jumlah = $detail->jumlah;
-                $hargaSatuan = number_format($detail->harga_satuan, 0, ',', '.');
+    //         $subtotal = 0;
     
-                $thermalPrinter->text(
-                    str_pad($jumlah, 5, " ", STR_PAD_RIGHT) . 
-                    str_pad($namaProduk, 35, " ") . 
-                    str_pad($hargaSatuan, 7, " ", STR_PAD_LEFT) . "\n"
-                );
+    //         foreach ($pembelian->detail as $detail) {
+    //             $namaProduk = $detail->produk->nama_produk;
+    //             $jumlah = $detail->jumlah;
+    //             $hargaSatuan = number_format($detail->harga_satuan, 0, ',', '.');
     
-                $subtotal += $detail->jumlah * $detail->harga_satuan;
-            }
+    //             $thermalPrinter->text(
+    //                 str_pad($jumlah, 5, " ", STR_PAD_RIGHT) . 
+    //                 str_pad($namaProduk, 35, " ") . 
+    //                 str_pad($hargaSatuan, 7, " ", STR_PAD_LEFT) . "\n"
+    //             );
     
-            $thermalPrinter->text("------------------------------------------------\n");
-            $pajak = $subtotal * 0.10;  
-            $grandTotal = $subtotal + $pajak;
+    //             $subtotal += $detail->jumlah * $detail->harga_satuan;
+    //         }
     
-            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_RIGHT);
-            $thermalPrinter->text("Subtotal     : " . str_pad(number_format($subtotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-            $thermalPrinter->text("Pajak        : " . str_pad(number_format($pajak, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-            $thermalPrinter->text("---------------------------------\n");
-            $thermalPrinter->text("Total Bayar  : " . str_pad(number_format($grandTotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-            $thermalPrinter->text("TUNAI        : " . str_pad(number_format($amountPaid, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
-            $thermalPrinter->text("---------------------------------\n");
-            $thermalPrinter->text("Kembalian    : " . str_pad(number_format($change, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+    //         $thermalPrinter->text("------------------------------------------------\n");
+    //         $pajak = $subtotal * 0.10;  
+    //         $grandTotal = $subtotal + $pajak;
     
-            $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_CENTER);
-            $thermalPrinter->text("================================================\n");
-            $thermalPrinter->text("Terima kasih atas kunjungan Anda!\n");
-            $thermalPrinter->text("Mohon simpan struk ini sebagai bukti pembayaran\n");
+    //         $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_RIGHT);
+    //         $thermalPrinter->text("Subtotal     : " . str_pad(number_format($subtotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+    //         $thermalPrinter->text("Pajak        : " . str_pad(number_format($pajak, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+    //         $thermalPrinter->text("---------------------------------\n");
+    //         $thermalPrinter->text("Total Bayar  : " . str_pad(number_format($grandTotal, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+    //         $thermalPrinter->text("TUNAI        : " . str_pad(number_format($amountPaid, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
+    //         $thermalPrinter->text("---------------------------------\n");
+    //         $thermalPrinter->text("Kembalian    : " . str_pad(number_format($change, 0, ',', '.'), 12, " ", STR_PAD_LEFT) . "\n");
     
-            $filePathQRCode = 'qrcode/' . $nomor_struk . '.png';
-            if (Storage::disk('public')->exists($filePathQRCode)) {
-                $filePath = storage_path('app/public/' . $filePathQRCode);
-                $escposImage = EscposImage::load($filePath, false);
-                $thermalPrinter->bitImage($escposImage);
-            } else {
-                return response()->json(['message' => 'QR Code tidak ditemukan.'], 500);
-            }
+    //         $thermalPrinter->setJustification(EscposPrinter::JUSTIFY_CENTER);
+    //         $thermalPrinter->text("================================================\n");
+    //         $thermalPrinter->text("Terima kasih atas kunjungan Anda!\n");
+    //         $thermalPrinter->text("Mohon simpan struk ini sebagai bukti pembayaran\n");
     
-            $thermalPrinter->cut(); 
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
-        } finally {
-            if (isset($thermalPrinter)) {
-                $thermalPrinter->close();
-            }
-        }
+    //         $filePathQRCode = 'qrcode/' . $nomor_struk . '.png';
+    //         if (Storage::disk('public')->exists($filePathQRCode)) {
+    //             $filePath = storage_path('app/public/' . $filePathQRCode);
+    //             $escposImage = EscposImage::load($filePath, false);
+    //             $thermalPrinter->bitImage($escposImage);
+    //         } else {
+    //             return response()->json(['message' => 'QR Code tidak ditemukan.'], 500);
+    //         }
     
-        return response()->json(['message' => 'Struk berhasil dicetak!']);
-    }
+    //         $thermalPrinter->cut(); 
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+    //     } finally {
+    //         if (isset($thermalPrinter)) {
+    //             $thermalPrinter->close();
+    //         }
+    //     }
+    
+    //     return response()->json(['message' => 'Struk berhasil dicetak!']);
+    // }
     
 
 
@@ -433,5 +440,79 @@ public function generateNomorStruk()
     //     return response()->json(['message' => 'Struk berhasil disimpan sebagai PDF', 'file' => $filePath]);
     // }
     
-       
+    public function printReceipt(Request $request, $pembelianId)
+    {
+        // Mengambil data pembelian dan relasi produk
+        $pembelian = Pembelian::with('detail.produk')->find($pembelianId);
+        $restoran = Auth::user()->restoran;
+    
+        if (!$pembelian) {
+            return response()->json(['message' => 'Pembelian tidak ditemukan'], 404);
+        }
+    
+        // Mengambil data pembayaran berdasarkan ID pembelian
+        $pembayaran = Pembayaran::where('pembelian_id', $pembelianId)->first();
+    
+        if (!$pembayaran) {
+            return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
+        }
+    
+        $nomor_struk = $pembayaran->nomor_struk;
+    
+        // Ambil jumlah tunai yang dibayar dari database
+        $tunai = $pembayaran->tunai;  // Ambil tunai dari kolom 'tunai' di tabel Pembayaran
+        $kembalian = $tunai - $pembayaran->total_pembayaran;  // Menghitung kembalian
+    
+        // Mengatur jenis pesanan
+        $jenisPesanan = $pembelian->jenis_pesanan ?? 'N/A';
+        $jenisPesanan = $jenisPesanan === 'dine-in' ? 'Dine In' : ($jenisPesanan === 'take-away' ? 'Take Away' : $jenisPesanan);
+    
+        // Menghitung subtotal dan mendata detail pembelian
+        $subtotal = 0;
+        $details = $pembelian->detail->map(function ($detail) use (&$subtotal) {
+            $subtotal += $detail->jumlah * $detail->harga_satuan;
+            return [
+                'nama_produk' => $detail->produk->nama_produk,
+                'jumlah' => $detail->jumlah,
+                'harga_satuan' => $detail->harga_satuan,
+            ];
+        });
+    
+        // Menghitung pajak dan total pembayaran
+        $pajak = $subtotal * 0.10;
+        $grandTotal = $subtotal + $pajak;
+    
+        // Mengirim data ke view
+        return view('pembayaran.print', [ 
+            'restoran' => $restoran,
+            'pembelian' => $pembelian,
+            'nomor_struk' => $nomor_struk,
+            'jenisPesanan' => $jenisPesanan,
+            'details' => $details,
+            'subtotal' => $subtotal,
+            'pajak' => $pajak,
+            'grandTotal' => $grandTotal,
+            'tunai' => $tunai,  // Kirimkan nilai tunai ke view
+            'kembalian' => $kembalian,  // Kirimkan kembalian ke view
+        ]);
+    }
+    
+    public function selesai($id)
+    {
+        $pembelian = Pembelian::find($id);
+    
+        if ($pembelian) {
+            $pembelian->status = 'completed';
+            $pembelian->save();
+    
+            \Log::info('Pembelian berhasil diselesaikan', ['id' => $id, 'status' => 'completed']);
+    
+            return response()->json(['success' => true]);
+        }
+    
+        \Log::error('Pembelian tidak ditemukan', ['id' => $id]);
+    
+        return response()->json(['success' => false], 400);
+    }
+    
 }

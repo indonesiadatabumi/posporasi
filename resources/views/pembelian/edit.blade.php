@@ -11,6 +11,26 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/pembelian.css') }}">
     <style>
+        .sticky-navbar .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    padding: 8px 4px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.sticky-navbar .nav-link .icon-wrapper i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.sticky-navbar .nav-link .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
         .custom-title {
             font-size: 1rem;
         }
@@ -174,50 +194,41 @@
             </ul>
         </div>
     </nav>
-    
-
-    <!-- Main Content -->
     <div class="container-fluid mt-4">
-        <div class="row">
+        <div class="row g-3">
             <!-- Kategori Menu -->
             <div class="col-md-1">
-                <div class="col-md-1">
-                    <div class="sticky-navbar">
-                        <ul class="nav flex-column nav-pills">
+                <div class="sticky-navbar">
+                    <ul class="nav flex-column nav-pills text-center">
+                        <li class="nav-item">
+                            <button class="nav-link active p-2" data-filter="all">
+                                <i class="fa fa-home"></i>
+                                <div class="text-truncate">Semua</div>
+                            </button>
+                        </li>
+                        @foreach ($kategori as $item)
                             <li class="nav-item">
-                                <button class="nav-link active" data-filter="all">
-                                    <div class="icon-wrapper">
-                                        <i class="fa fa-home"></i>
-                                        <span>Semua Menu</span>
-                                    </div>
+                                <button class="nav-link p-2" data-filter="{{ $item->id }}">
+                                    <i class="fa {{ $item->icon }}"></i>
+                                    <div class="text-truncate">{{ $item->nama_kategori }}</div>
                                 </button>
                             </li>
-                            @foreach ($kategori as $item)
-                                <li class="nav-item">
-                                    <button class="nav-link" data-filter="{{ $item->id }}">
-                                        <div class="icon-wrapper">
-                                            <i class="fa {{ $item->icon }}"></i>
-                                            <span>{{ $item->nama_kategori }}</span>
-                                        </div>
-                                    </button>
-                                </li>
-                            @endforeach
-                        </ul>
-                        
-                    </div>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
-            <!-- Produk dan Keranjang -->
+    
+            <!-- Produk -->
             <div class="col-md-8">
-                <div class="row">
+                <div class="row g-3">
                     @foreach ($produk as $item)
-                        <div class="col-md-4 mb-4 product" data-kategori="{{ $item->id_kategori }}">
+                        <div class="col-md-4 product" data-kategori="{{ $item->id_kategori }}">
                             <div class="card shadow-sm">
                                 <img src="{{ asset('storage/' . $item->foto) }}" class="card-img-top"
                                     alt="{{ $item->nama_produk }}">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $item->nama_produk }}</h5>
-                                    <p class="card-description text-muted"><em>{{ $item->deskripsi }}</em></p>
+                                    <p class="card-description text-mute"><em>{{ $item->deskripsi }}</em></p>
                                     <p class="card-text fw-bold">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</p>
                                     <button class="btn btn-primary add-to-cart" data-produk-id="{{ $item->id }}"
                                         data-produk-name="{{ $item->nama_produk }}"
@@ -237,16 +248,14 @@
                     @endforeach
                 </div>
             </div>
+    
+            <!-- Keranjang -->
             <div class="col-md-3">
                 <div class="cart border rounded shadow-sm p-4 bg-light">
-                    <h4 class="mb-4 text-center text-success" >Keranjang Pembelian</h4>
-
-                    <!-- Daftar item di keranjang -->
+                    <h4 class="mb-4 text-center text-success">Keranjang Pembelian</h4>
                     <div id="cart-items" class="mb-4">
                         <!-- Item akan ditambahkan di sini -->
                     </div>
-
-                    <!-- Ringkasan harga -->
                     <div class="cart-summary mb-4">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Total:</span>
@@ -261,42 +270,32 @@
                             <span id="final-price" class="text-success">Rp 0</span>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="customer-name" class="form-label">Nama Pembeli:</label>
-                        <input type="text" class="form-control" id="customer-name" placeholder="Masukkan nama pembeli"
-                            required>
+                    <div class="mb-4">
+                        <label for="order-type" class="form-label fw-semibold">Tipe Pesanan:</label>
+                        <select class="form-select" id="order-type" required>
+                            <option value="" disabled selected>Pilih Tipe Pesanan</option>
+                            <option value="dine-in">Dine In</option>
+                            <option value="take-away">Take Away</option>
+                        </select>
                     </div>
-
-                    @if ($pembelian->id_meja)
-                        <div class="mb-3" id="meja-container">
-                            <label for="meja" class="form-label">Pilih Meja:</label>
-                            <select class="form-control" id="meja-select" required>
-                                <option value="">Pilih Meja</option>
-                                @foreach ($meja as $item)
-                                    @if ($item->status == 'tersedia')
-                                        <option value="{{ $item->id }}">
-                                            Meja {{ $item->nomor_meja }} ({{ $item->kapasitas }})
-                                        </option>
-                                    @endif
-                                    @if ($item->id == $pembelian->id_meja)
-                                        <option value="{{ $item->id }}" selected>
-                                            Meja {{ $item->nomor_meja }} ({{ $item->kapasitas }})
-                                        </option>
-                                    @endif
-                                @endforeach
-                            </select>
-                        </div>
-                    @else
-                        <div class="mb-3">
-                            <label for="order-type" class="form-label">Pilih Tipe Pesanan:</label>
-                            <select class="form-control" id="order-type" required>
-                                <option value="">Pilih Tipe Pesanan</option>
-                                <option value="dine-in">Dine In</option>
-                                <option value="take-away">Take Away</option>
-                            </select>
-                        </div>
-                    @endif
-
+                    <div class="mb-4" id="meja-container" style="display: none;">
+                        <label for="meja-select" class="form-label fw-semibold">Pilih Meja:</label>
+                        <select class="form-select" id="meja-select" required>
+                            <option value="" disabled selected>Pilih Meja</option>
+                            @foreach ($meja as $item)
+                                @if ($item->status == 'tersedia')
+                                    <option value="{{ $item->id }}">
+                                        Meja {{ $item->nomor_meja }} ({{ $item->kapasitas }})
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="customer-name" class="form-label fw-semibold">Nama Pembeli:</label>
+                        <input type="text" class="form-control" id="customer-name"
+                            placeholder="Masukkan nama pembeli" required>
+                    </div>
                     <button id="checkout-btn" class="btn btn-success w-100">Checkout</button>
                 </div>
             </div>

@@ -3,7 +3,6 @@
 
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <!-- Modal untuk Pembayaran -->
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -15,12 +14,11 @@
             <div class="modal-body">
                 <p>Total Akhir: <strong id="final-price-modal">Rp 0</strong></p>
                 <div class="mb-3">
-                    <label for="amount-paid" class="form-label">Nominal yang Dibayarkan:</label>
-                    <input type="text" id="amount-paid" class="form-control" placeholder="Masukkan jumlah bayar" />
+                    <label for="tunai" class="form-label">Nominal yang Dibayarkan:</label>
+                    <input type="text" id="tunai" class="form-control" placeholder="Masukkan jumlah uang tunai" />
                     <input type="hidden" id="totalBayar" />
                 </div>
-                <p>Kembalian: <strong id="change-amount">Rp 0</strong><input type="hidden" id="kembalian"
-                        name="kembalian" /></p>
+                <p>Kembalian: <strong id="change-amount">Rp 0</strong><input type="hidden" id="kembalian" name="kembalian" /></p>
 
                 <div class="mb-3">
                     <label class="form-label">Metode Pembayaran:</label><br />
@@ -37,7 +35,6 @@
         </div>
     </div>
 </div>
-
 <style>
     /* Memperbesar modal */
     .modal-dialog {
@@ -60,115 +57,90 @@
         color: white;
     }
 </style>
-
 <script>
     $(document).ready(function() {
-        function numberWithDots(x) {
-            // return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            return new Intl.NumberFormat('id-ID').format(x);
-        }
+    function numberWithDots(x) {
+        return new Intl.NumberFormat('id-ID').format(x);
+    }
 
-        $('#pay-btn').click(function() {
-            const finalPrice = parseFloat($('#final-price').text().replace('Rp ', '').replace(/\./g, '')
-                .replace(',', '.'));
-            $('#final-price-modal').text(`Rp ${numberWithDots(finalPrice)}`);
-            $('#amount-paid').val('');
-            $('#change-amount').text('Rp 0');
-            $('#confirm-payment').prop('disabled', true);
-            $('#paymentModal').modal('show');
-        });
+    $('#pay-btn').click(function() {
+        const finalPrice = parseFloat($('#final-price').text().replace('Rp ', '').replace(/\./g, '').replace(',', '.'));
+        $('#final-price-modal').text(`Rp ${numberWithDots(finalPrice)}`);
+        $('#tunai').val('');
+        $('#change-amount').text('Rp 0');
+        $('#confirm-payment').prop('disabled', true);
+        $('#paymentModal').modal('show');
+    });
 
-        $('#amount-paid').on('input', function() {
-            let amountPaid = $(this).val().replace(/\D/g, '');
-            amountPaid = parseFloat(amountPaid || '0');
-            $('#totalBayar').val(amountPaid);
+    $('#tunai').on('input', function() {
+        let amountPaid = $(this).val().replace(/\D/g, '');
+        amountPaid = parseFloat(amountPaid || '0');
+        $('#totalBayar').val(amountPaid);
 
-            $(this).val(numberWithDots(amountPaid));
+        $(this).val(numberWithDots(amountPaid));
 
-            const finalPrice = parseFloat($('#final-price').text().replace('Rp ', '').replace(/\./g, '')
-                .replace(',', '.'));
-            const change = amountPaid - finalPrice;
-            $('#kembalian').val(change);
-            $('#change-amount').text(`Rp ${numberWithDots(change < 0 ? 0 : change)}`);
-            $('#confirm-payment').prop('disabled', amountPaid < finalPrice);
-        });
+        const finalPrice = parseFloat($('#final-price').text().replace('Rp ', '').replace(/\./g, '').replace(',', '.'));
+        const change = amountPaid - finalPrice;
+        $('#kembalian').val(change);
+        $('#change-amount').text(`Rp ${numberWithDots(change < 0 ? 0 : change)}`);
+        $('#confirm-payment').prop('disabled', amountPaid < finalPrice);
+    });
 
-        function bayar() {
-            const amountPaid = parseFloat($('#totalBayar').val()) || 0;
-            const finalPrice = parseFloat($('#final-price').text().replace('Rp ', '').replace(/\./g, '')
-                .replace(',', '.'));
-            const paymentMethod = $("input[name='payment-method']:checked").val();
-            const pembelianId = $('#pembelian-id').val();
+    // Fungsi bayar yang mengirimkan data pembayaran ke server
+   
+    function bayar() {
+    const amountPaid = parseFloat($('#totalBayar').val()) || 0;  // Jumlah yang dibayar
+    const finalPrice = parseFloat($('#final-price').text().replace('Rp ', '').replace(/\./g, '').replace(',', '.'));  // Harga akhir
+    const paymentMethod = $("input[name='payment-method']:checked").val();  // Metode pembayaran (cash atau non-cash)
+    const pembelianId = $('#pembelian-id').val();  // ID pembelian
+    const tunai = parseFloat($('#tunai').val().replace(/\D/g, '') || 0);  // Jumlah tunai yang dibayar
 
-            $.ajax({
-                url: '/pembayaran',
-                method: 'POST',
-                data: {
-                    pembelian_id: pembelianId,
-                    total_pembayaran: amountPaid,
-                    metode_pembayaran: paymentMethod,
-                    pajak: finalPrice - amountPaid,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Pembayaran Berhasil!',
-                        text: response.message,
-                    }).then(() => {
-                        cetakStruk(pembelianId);
-                    });
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Pembayaran Gagal',
-                        text: xhr.responseJSON.message,
-                    });
-                }
-            });
-        }
-
-        function cetakStruk(pembelianId) {
-            const kembalian = $('#kembalian').val();
-            const totalBayar = $('#totalBayar').val();
-            $.ajax({
-                url: `{{ url('/pembayaran/print-receipt') }}/${pembelianId}?change=${kembalian}&amountPaid=${totalBayar}`,
-                method: 'GET',
-                success: function(printResponse) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Struk Berhasil Dicetak!',
-                        text: printResponse.message,
-                    });
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Mencetak Struk',
-                        text: xhr.responseJSON ? xhr.responseJSON.message :
-                            'Terjadi kesalahan saat mencetak struk.',
-                    });
-                }
-            });
-        }
-
-        $('#confirm-payment').click(function() {
+    // Kirim data ke server
+    $.ajax({
+        url: '/pembayaran',  // Endpoint pembayaran
+        method: 'POST',
+        data: {
+            pembelian_id: pembelianId,
+            total_pembayaran: amountPaid,
+            metode_pembayaran: paymentMethod,
+            tunai: tunai,  // Kirimkan nilai tunai
+            pajak: finalPrice - amountPaid,
+            _token: '{{ csrf_token() }}'  // CSRF token untuk keamanan
+        },
+        success: function(response) {
             Swal.fire({
-                title: 'Konfirmasi Pembayaran',
-                text: 'Apakah Anda yakin ingin melakukan pembayaran ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Konfirmasi',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    bayar();
-                }
+                icon: 'success',
+                title: 'Pembayaran Berhasil!',
+                text: response.message,
+            }).then(() => {
+                location.reload();  // Reload halaman setelah pembayaran berhasil
             });
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Pembayaran Gagal',
+                text: xhr.responseJSON.message || 'Terjadi kesalahan saat memproses pembayaran.',
+            });
+        }
+    });
+}
+
+
+    $('#confirm-payment').click(function() {
+        Swal.fire({
+            title: 'Konfirmasi Pembayaran',
+            text: 'Apakah Anda yakin ingin melakukan pembayaran ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Konfirmasi',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                bayar();
+            }
         });
     });
+});
+
 </script>

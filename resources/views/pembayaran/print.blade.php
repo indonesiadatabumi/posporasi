@@ -18,7 +18,7 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 50mm;  
+    width: 20mm;  
     height: auto;
 }
         body {
@@ -27,6 +27,7 @@
             margin: 0;
             padding: 0;
             width: 80mm;
+            height: auto;
         }
 
         .sheet {
@@ -67,6 +68,11 @@
         .header {
             font-size: 14px;   
             font-weight: bold;
+        }
+        @media print{
+            .hidden-print,
+            .hidden-print * {display : none !important;
+            }
         }
     </style>
 </head>

@@ -84,10 +84,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rekapkasir/export-pdf', [RekapKasirController::class, 'exportPDF'])->name('rekapkasir.exportPDF');
         
 
-        Route::resource('printer', PrinterController::class);
-        Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
-        Route::get('/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('setDefault');   
-        Route::post('/printer/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('printer.setDefault');
+        // Route::resource('printer', PrinterController::class);
+        // Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
+        // Route::get('/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('setDefault');   
+        // Route::post('/printer/setDefault/{printer}', [PrinterController::class, 'setDefault'])->name('printer.setDefault');
         
     });
 

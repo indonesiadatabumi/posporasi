@@ -137,7 +137,7 @@
                             </div>
                             <div class="card-footer bg-light d-flex justify-content-between p-2 mt-2">
                                 <!-- Tombol Cetak Struk -->
-                                <a href="/pembayaran/{{ $item->id }}/print" class="btn btn-success btn-sm flex-grow-1 me-1">
+                                <a href="/pembayaran/{{ $item->id }}/print" class="btn btn-success btn-sm flex-grow-1 me-1" target="_blank">
                                     <i class="fas fa-print"></i> Cetak Struk
                                 </a>
                                 <!-- Tombol Selesai -->

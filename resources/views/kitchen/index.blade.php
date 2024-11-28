@@ -10,9 +10,7 @@
 
 @push('scripts')
 <style>
-    body {
-        padding-top: 25px; /* Sesuaikan dengan tinggi navbar */
-    }
+    
     .custom-title {
         font-size: 1rem;  
     }

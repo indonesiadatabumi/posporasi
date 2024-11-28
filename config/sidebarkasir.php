@@ -28,11 +28,11 @@ return [
 		'title' => 'Rekap Kasir',
 		'url' => '/rekapkasir',
 	],[
-		'icon' => 'fa fa-print',
-		'title' => 'Printer Setting',
-		'url' => '/printer',
-		'route-name' => '/printer'
-	],[
+	// 	'icon' => 'fa fa-print',
+	// 	'title' => 'Printer Setting',
+	// 	'url' => '/printer',
+	// 	'route-name' => '/printer'
+	// ],[
 		'icon' => 'fa fa-sign-out',
 			'title' => 'Logout',
 			'url' => '/logout',

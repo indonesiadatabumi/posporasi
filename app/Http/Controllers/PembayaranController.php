@@ -442,7 +442,6 @@ public function index()
     
     public function printReceipt(Request $request, $pembelianId)
     {
-        // Mengambil data pembelian dan relasi produk
         $pembelian = Pembelian::with('detail.produk')->find($pembelianId);
         $restoran = Auth::user()->restoran;
     
@@ -450,7 +449,6 @@ public function index()
             return response()->json(['message' => 'Pembelian tidak ditemukan'], 404);
         }
     
-        // Mengambil data pembayaran berdasarkan ID pembelian
         $pembayaran = Pembayaran::where('pembelian_id', $pembelianId)->first();
     
         if (!$pembayaran) {
@@ -458,16 +456,14 @@ public function index()
         }
     
         $nomor_struk = $pembayaran->nomor_struk;
+        $tunai = $pembayaran->tunai;   
+        $kembalian = $tunai - $pembayaran->total_pembayaran;  
     
-        // Ambil jumlah tunai yang dibayar dari database
-        $tunai = $pembayaran->tunai;  // Ambil tunai dari kolom 'tunai' di tabel Pembayaran
-        $kembalian = $tunai - $pembayaran->total_pembayaran;  // Menghitung kembalian
-    
-        // Mengatur jenis pesanan
+        // Tentukan jenis pesanan
         $jenisPesanan = $pembelian->jenis_pesanan ?? 'N/A';
         $jenisPesanan = $jenisPesanan === 'dine-in' ? 'Dine In' : ($jenisPesanan === 'take-away' ? 'Take Away' : $jenisPesanan);
     
-        // Menghitung subtotal dan mendata detail pembelian
+        // Hitung subtotal, pajak, dan total
         $subtotal = 0;
         $details = $pembelian->detail->map(function ($detail) use (&$subtotal) {
             $subtotal += $detail->jumlah * $detail->harga_satuan;
@@ -478,11 +474,17 @@ public function index()
             ];
         });
     
-        // Menghitung pajak dan total pembayaran
-        $pajak = $subtotal * 0.10;
+        $pajak = $subtotal * 0.10; // Pajak 10%
         $grandTotal = $subtotal + $pajak;
     
-        // Mengirim data ke view
+        // QR Code Path
+        $filePathQRCode = 'qrcode/' . $nomor_struk . '.png';
+        $qrCodeURL = null;
+        if (Storage::disk('public')->exists($filePathQRCode)) {
+            $qrCodeURL = asset('storage/' . $filePathQRCode); // URL untuk diakses di blade
+        }
+    
+        // Kembalikan view
         return view('pembayaran.print', [ 
             'restoran' => $restoran,
             'pembelian' => $pembelian,
@@ -492,11 +494,12 @@ public function index()
             'subtotal' => $subtotal,
             'pajak' => $pajak,
             'grandTotal' => $grandTotal,
-            'tunai' => $tunai,  // Kirimkan nilai tunai ke view
-            'kembalian' => $kembalian,  // Kirimkan kembalian ke view
+            'tunai' => $tunai,   
+            'kembalian' => $kembalian,
+            'qrCodeURL' => $qrCodeURL, // Sertakan QR Code URL
         ]);
     }
-    
+        
     public function selesai($id)
     {
         $pembelian = Pembelian::find($id);

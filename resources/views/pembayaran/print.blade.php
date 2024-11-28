@@ -9,7 +9,18 @@
             margin: 0;
             size: 80mm auto;
         }
-
+        .qr-code {
+    text-align: center;
+    margin-top: 20px;  
+    margin-bottom: 20px; 
+}
+.qr-code img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50mm;  
+    height: auto;
+}
         body {
             font-family: monospace;
             font-size: 12px; 
@@ -144,6 +155,13 @@
             <strong>Terima Kasih Atas Kunjungan Anda!</strong><br>
             Simpan Nota Ini Sebagai Bukti Pembayaran
         </div>
+        @if ($qrCodeURL)
+        <div class="qr-code">
+            <img src="{{ $qrCodeURL }}" alt="QR Code">
+        </div>
+    @else
+        <p>QR Code tidak tersedia.</p>
+    @endif
     </div>
 
     <!-- Script untuk Cetak -->

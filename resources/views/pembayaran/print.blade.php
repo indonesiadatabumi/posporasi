@@ -3,120 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak Struk</title>
+    <title>Cetak Nota {{ $nomor_struk }}</title>
     <style>
         @page {
             margin: 0;
-            size: 58mm auto;  
+            size: 80mm auto;
         }
 
-        body.struk {
-            width: 58mm;    
-            margin: 0;    
-            padding: 0;    
-            font-size: 10px;  
-            font-family: monospace;  
+        body {
+            font-family: monospace;
+            font-size: 12px; 
+            margin: 0;
+            padding: 0;
+            width: 80mm;
         }
 
-        body.struk .sheet {
-            padding: 2mm;   
-            box-sizing: border-box;  
-            overflow: hidden;  
+        .sheet {
+            padding: 5mm;
+            box-sizing: border-box;
         }
 
-        .txt-left { text-align: left; }
-        .txt-center { text-align: center; }
-        .txt-right { text-align: right; }
-
-        @media screen {
-            body { background: #e0e0e0; font-family: monospace; }
-            .sheet {
-                background: white;
-                box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
-                margin: 5mm;
-            }
+        .txt-center {
+            text-align: center;
         }
 
-        @media print {
-            body { font-family: monospace; }
-            body.struk { width: 58mm; text-align: left; }
-            body.struk .sheet { padding: 2mm; }
-            .txt-left { text-align: left; }
-            .txt-center { text-align: center; }
-            .txt-right { text-align: right; }
+        .txt-left {
+            text-align: left;
+        }
+
+        .txt-right {
+            text-align: right;
         }
 
         table {
             width: 100%;
-            table-layout: fixed;  
+            border-collapse: collapse;
         }
 
-        td, th {
-            font-size: 9px;  
+        td {
+            padding: 3px 0;  
+        }
+
+        .line {
+            border-top: 1px dashed #000;
+            margin: 8px 0;  
+        }
+
+        .bold {
+            font-weight: bold; 
+        }
+
+        .header {
+            font-size: 14px;   
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="struk">
+<body onload="printOut()">
     <div class="sheet">
-        <div class="txt-center">
-            <h2>{{ $restoran->nama_resto }}</h2>
-            <p>{{ $restoran->alamat }}</p>
-            <p>Telp: {{ $restoran->nomor_telepon }}</p>
-            <hr>
+        <!-- Header Restoran -->
+        <div class="txt-center header">
+            {{ $restoran->nama_resto }}<br>
         </div>
-
-        <p>Customer: {{ $pembelian->pembeli }}</p>
-        <p>No. Struk: {{ $nomor_struk }}</p>
-        <p>Jenis Pesanan: {{ $jenisPesanan }}</p>
-        <p>Tanggal: {{ now()->format('d-m-Y') }}</p>
-        <hr>
-
-        <table>
-            @foreach ($pembelian->detail as $detail)
-                <tr>
-                    <td class="txt-left">{{ $detail->jumlah }} x {{ $detail->produk->nama_produk }}</td>
-                    <td class="txt-right">Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
-                </tr>
-            @endforeach
-        </table>
-        <hr>
-        <table>
-            <tr>
-                <td class="txt-left">Subtotal:</td>
-                <td class="txt-right">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="txt-left">Pajak:</td>
-                <td class="txt-right">Rp {{ number_format($pajak, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="txt-left">Total Bayar:</td>
-                <td class="txt-right">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="txt-left">Tunai:</td>
-                <td class="txt-right">Rp {{ number_format($tunai, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="txt-left">Kembalian:</td>
-                <td class="txt-right">Rp {{ number_format($kembalian, 0, ',', '.') }}</td>
-            </tr>
-            
-        </table>
-        <hr>
         <div class="txt-center">
-            <p>Terima kasih atas kunjungan Anda!</p>
-            <p>Mohon simpan struk ini sebagai bukti pembayaran</p>
+            {{ $restoran->alamat }}<br>
+            Telp: {{ $restoran->nomor_telepon }}
+        </div>
+        <div class="line"></div>
+
+        <!-- Informasi Transaksi -->
+        <table>
+            <tr>
+                <td class="bold">Nota</td>
+                <td>:</td>
+                <td>{{ $nomor_struk }}</td>
+            </tr>
+            <tr>
+                <td class="bold">Customer</td>
+                <td>:</td>
+                <td>{{ $pembelian->pembeli }}</td>
+            </tr>
+            <tr>
+                <td class="bold">Tanggal</td>
+                <td>:</td>
+                <td>{{ now()->format('d-m-Y H:i:s') }}</td>
+            </tr>
+        </table>
+        <div class="line"></div>
+
+        <!-- Detail Item -->
+        <table>
+            <thead>
+                <tr>
+                    <td class="bold">Item</td>
+                    <td class="txt-right bold">Qty</td>
+                    <td class="txt-right bold">Harga</td>
+                    <td class="txt-right bold">Total</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($pembelian->detail as $detail)
+                <tr>
+                    <td>{{ $detail->produk->nama_produk }}</td>
+                    <td class="txt-right">{{ $detail->jumlah }}</td>
+                    <td class="txt-right">{{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                    <td class="txt-right">{{ number_format($detail->total_harga, 0, ',', '.') }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <div class="line"></div>
+
+        <!-- Total dan Pembayaran -->
+        <table>
+            <tr>
+                <td class="bold">Sub Total</td>
+                <td class="txt-right bold">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="bold">Pajak</td>
+                <td class="txt-right bold">Rp {{ number_format($pajak, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="bold">Grand Total</td>
+                <td class="txt-right bold">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="bold">Tunai</td>
+                <td class="txt-right bold">Rp {{ number_format($tunai, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="bold">Kembali</td>
+                <td class="txt-right bold">Rp {{ number_format($kembalian, 0, ',', '.') }}</td>
+            </tr>
+        </table>
+        <div class="line"></div>
+
+        <!-- Footer -->
+        <div class="txt-center">
+            <strong>Terima Kasih Atas Kunjungan Anda!</strong><br>
+            Simpan Nota Ini Sebagai Bukti Pembayaran
         </div>
     </div>
+
+    <!-- Script untuk Cetak -->
+    <script>
+        function printOut() {
+            window.print();  
+            window.onafterprint = function() {
+                window.close();  
+            };
+        }
+    </script>
 </body>
 </html>
-
-<script>
-    window.onload = function() {
-        window.print();
-        window.onafterprint = function() {
-            window.close();  
-        }
-    };
-</script>

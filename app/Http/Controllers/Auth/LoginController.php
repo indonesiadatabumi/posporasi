@@ -22,32 +22,41 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
+    
     public function login(Request $request)
     {
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            $user = Auth::user();
-
-            switch ($user->role) {
-                case 'super_admin':
-                    return redirect()->intended('/super-admin/dashboard');
-                case 'owner':
-                    return redirect()->intended('/'); 
-                case 'pegawai':
-                    return redirect()->intended('/pegawai/dashboard'); //ga bisa nyimpen data tapi masuk, naitnya si itu ini manage tokonya kaya buat edit edit gitu, tapi buat nampilin nama tokonya pake card yg bisa di pencet view
-                default:    
-                    return redirect()->intended('/'); 
-            }
+    
+        $user = \App\Models\User::where('email', $request->email)->first();
+    
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Email tidak terdaftar.',
+            ])->withInput($request->only('email', 'remember'));
         }
-
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->withInput($request->only('email', 'remember'));
+    
+        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
+            return back()->withErrors([
+                'password' => 'Password salah.',
+            ])->withInput($request->only('email', 'remember'));
+        }
+    
+        $user = Auth::user();
+        switch ($user->role) {
+            case 'super_admin':
+                return redirect()->intended('/super-admin/dashboard');
+            case 'owner':
+                return redirect()->intended('/'); 
+            case 'pegawai':
+                return redirect()->intended('/pegawai/dashboard');  
+            default:
+                return redirect()->intended('/'); 
+        }
     }
+    
 
     public function logout(Request $request)
     {

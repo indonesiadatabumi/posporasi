@@ -8,86 +8,94 @@
 @section('title', 'Login Page')
 
 @section('content')
-    <!-- BEGIN login -->
-    <div class="login login-v2 fw-bold">
-        <!-- BEGIN login-cover -->
-        <div class="login-cover">
-            <div class="login-cover-img" style="background-image: url(/assets/img/login-bg/login-bg-17.jpg)" data-id="login-cover-image"></div>
-            <div class="login-cover-bg"></div>
-        </div>
-        <!-- END login-cover -->
-        <!-- BEGIN login-container -->
-        <div class="login-container">
-            <!-- BEGIN login-header -->
-            <div class="login-header">
-                <div class="brand">
-                    <div class="d-flex align-items-center">
-                        <span class="logo"></span> <b>POS</b> DBI
-                    </div>
-                    <small>Solusi transaksi dan operasional bisnis efisien.</small>
-                </div>  
-                <div class="icon">
-                    <i class="fa fa-lock"></i>
-                </div>
-            </div>
-            <!-- END login-header -->
-            <!-- BEGIN login-content -->
-            <div class="login-content">
-                <form action="{{ route('login') }}" method="POST">
-                    @csrf <!-- Token CSRF untuk keamanan -->
-                    <div class="form-floating mb-20px">
-                        <input type="email" name="email" class="form-control fs-13px h-45px border-0" placeholder="Email Address" id="emailAddress" required />
-                        <label for="emailAddress" class="d-flex align-items-center text-gray-600 fs-13px">Alamat Email</label>
-                    </div>
-                    <div class="form-floating mb-20px position-relative">
-                        <input type="password" name="password" class="form-control fs-13px h-45px border-0" placeholder="Password" id="password" required />
-                        <label for="password" class="d-flex align-items-center text-gray-600 fs-13px">Password</label>
-                        <button type="button" onclick="togglePasswordVisibility()" class="btn position-absolute end-0 top-50 translate-middle-y me-3 eye-toggle">
-                            <i id="togglePasswordIcon" class="fa fa-eye"></i>
-                        </button>
-                    </div>
-                    {{-- <div class="form-check mb-20px">
-                        <input class="form-check-input border-0" type="checkbox" name="remember" value="1" id="rememberMe" />
-                        <label class="form-check-label fs-13px text-gray-500" for="rememberMe">
-                            Ingat saya
-                        </label>
-                    </div> --}}
-                    <div class="mb-20px">
-                        <button type="submit" class="btn btn-success d-block w-100 h-45px btn-lg">Masuk</button>
-                    </div>
-                    <div class="text-gray-500">
-                        <label class="form-check-label">
-                            Belum punya akun? <a href="{{ url('register') }}" class="text-decoration-none">klik disini</a> untuk mendaftar.
-                        </label>
-                    </div>
-                </form>
-            </div>
-            <!-- END login-content -->
-        </div>
-        <!-- END login-container -->
+<div class="login-container vh-100 d-flex justify-content-center align-items-center position-relative">
+    <!-- Background Image -->
+    <div class="position-absolute top-0 start-0 w-100 h-100" 
+        style="background-image: url('{{ asset('assets/img/login-bg/1.jpg') }}'); 
+               background-size: cover; 
+               background-position: center; 
+               filter: blur(8px);">
     </div>
-    <!-- END login -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-white opacity-50"></div>
+    <!-- Login Card -->
+    <div class="card shadow-lg border-0 text-center position-relative" style="max-width: 400px; width: 100%;">
+        <div class="card-body p-4">
+            <h1 class="fw-bold text-primary mb-4">POS DBI</h1>
+            <form action="{{ route('login') }}" method="POST">
+                @csrf
+                <div class="form-floating mb-3">
+                    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" 
+                           id="emailAddress" placeholder="Alamat Email" value="{{ old('email') }}" required />
+                    <label for="emailAddress">Alamat Email</label>
+                    @error('email')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                <div class="form-floating mb-3 position-relative">
+                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" 
+                           id="password" placeholder="Password" required />
+                    <label for="password">Password</label>
+                    @error('password')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    <button type="button" onclick="togglePasswordVisibility()" 
+                            class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3 p-0" style="z-index: 2;">
+                        {{-- <i id="togglePasswordIcon" class="fa fa-eye"></i> --}}
+                    </button>
+                </div>
+            
+                <button type="submit" class="btn btn-primary w-100 py-2">Masuk</button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">Belum punya akun? <a href="{{ url('register') }}" class="text-decoration-none">Daftar</a></small>
+            </div>
+        </div>        
+    </div>
+</div>
 @endsection
 
 @push('scripts')
-    <script src="/assets/js/demo/login-v2.demo.js"></script>
-    <script src="/assets/js/demo/login-v2.demo.js"></script>
-    <script>
-        function togglePasswordVisibility() {
-            const passwordField = document.getElementById('password');
-            const toggleIcon = document.getElementById('togglePasswordIcon');
+<style>
+    .position-relative {
+    position: relative;
+}
 
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
+.btn-link {
+    z-index: 1; 
+}
+
+</style>
+<script>
+    function togglePasswordVisibility() {
+        const passwordField = document.getElementById('password');
+        const toggleIcon = document.getElementById('togglePasswordIcon');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
         }
-    </script>
-@endpush
+    }
 
-    
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('.form-control');
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                const errorFeedback = input.parentNode.querySelector('.invalid-feedback');
+                if (errorFeedback) {
+                    errorFeedback.style.display = 'none'; 
+                }
+                input.classList.remove('is-invalid');  
+            });
+        });
+    });
+</script>
+@endpush

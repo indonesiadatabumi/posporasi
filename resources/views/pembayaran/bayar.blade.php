@@ -36,7 +36,6 @@
     </div>
 </div>
 <style>
-    /* Memperbesar modal */
     .modal-dialog {
         max-width: 800px;
     }
@@ -86,26 +85,23 @@
         $('#confirm-payment').prop('disabled', amountPaid < finalPrice);
     });
 
-    // Fungsi bayar yang mengirimkan data pembayaran ke server
-   
     function bayar() {
-    const amountPaid = parseFloat($('#totalBayar').val()) || 0;  // Jumlah yang dibayar
+    const amountPaid = parseFloat($('#totalBayar').val()) || 0;  
     const finalPrice = parseFloat($('#final-price').text().replace('Rp ', '').replace(/\./g, '').replace(',', '.'));  // Harga akhir
-    const paymentMethod = $("input[name='payment-method']:checked").val();  // Metode pembayaran (cash atau non-cash)
-    const pembelianId = $('#pembelian-id').val();  // ID pembelian
-    const tunai = parseFloat($('#tunai').val().replace(/\D/g, '') || 0);  // Jumlah tunai yang dibayar
+    const paymentMethod = $("input[name='payment-method']:checked").val();
+    const pembelianId = $('#pembelian-id').val();  
+    const tunai = parseFloat($('#tunai').val().replace(/\D/g, '') || 0); 
 
-    // Kirim data ke server
     $.ajax({
-        url: '/pembayaran',  // Endpoint pembayaran
+        url: '/pembayaran',  
         method: 'POST',
         data: {
             pembelian_id: pembelianId,
             total_pembayaran: amountPaid,
             metode_pembayaran: paymentMethod,
-            tunai: tunai,  // Kirimkan nilai tunai
+            tunai: tunai, 
             pajak: finalPrice - amountPaid,
-            _token: '{{ csrf_token() }}'  // CSRF token untuk keamanan
+            _token: '{{ csrf_token() }}' 
         },
         success: function(response) {
             Swal.fire({
@@ -113,7 +109,7 @@
                 title: 'Pembayaran Berhasil!',
                 text: response.message,
             }).then(() => {
-                location.reload();  // Reload halaman setelah pembayaran berhasil
+                location.reload();   
             });
         },
         error: function(xhr) {

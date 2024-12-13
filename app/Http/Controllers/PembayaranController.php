@@ -43,7 +43,7 @@ public function generateNomorStruk()
 }
 
 public function index()
-{
+{ 
     $pembelian = Pembelian::whereIn('status', ['pending', 'paid'])
         ->where('id_resto', Auth::user()->restoran->id ?? 0)
         ->get();
@@ -105,7 +105,7 @@ public function index()
             'metode_pembayaran' => 'required|string|max:50',
             'pembelian_id' => 'required|integer',
             'total_pembayaran' => 'required|numeric|min:0',
-            'tunai' => 'required|numeric|min:0',  // Validasi untuk tunai
+            'tunai' => 'required|numeric|min:0',   
         ]);
     
         $pembelian = Pembelian::with('detail')->find($request->pembelian_id);
@@ -454,7 +454,6 @@ public function index()
         if (!$pembayaran) {
             return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
         }
-    
         $nomor_struk = $pembayaran->nomor_struk;
         $tunai = $pembayaran->tunai;   
         $kembalian = $tunai - $pembayaran->total_pembayaran;  

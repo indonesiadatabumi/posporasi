@@ -318,8 +318,18 @@ $('#update-form').on('submit', function(e) {
 });
 
 
-    function selesaiPembelian(id) {
-        if (confirm('Apakah Anda yakin ingin menyelesaikan transaksi ini?')) {
+function selesaiPembelian(id) {
+    Swal.fire({
+        title: 'Konfirmasi',
+        text: 'Apakah Anda yakin ingin menyelesaikan transaksi ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, selesaikan!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
             fetch(`/pembayaran/${id}/selesai`, {
                 method: 'POST',
                 headers: {
@@ -331,18 +341,33 @@ $('#update-form').on('submit', function(e) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Transaksi berhasil diselesaikan.');
-                    location.reload();   
+                    Swal.fire(
+                        'Berhasil!',
+                        'Transaksi berhasil diselesaikan.',
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
                 } else {
-                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                    Swal.fire(
+                        'Gagal!',
+                        'Terjadi kesalahan. Silakan coba lagi.',
+                        'error'
+                    );
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan. Silakan coba lagi.');
+                Swal.fire(
+                    'Kesalahan!',
+                    'Terjadi kesalahan. Silakan coba lagi.',
+                    'error'
+                );
             });
         }
-    }
+    });
+}
+
 
 </script>
 

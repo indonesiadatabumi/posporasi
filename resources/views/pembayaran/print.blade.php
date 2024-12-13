@@ -77,7 +77,7 @@
 
         .qr-code {
             text-align: center;
-            margin: 20px 0;
+            margin: 5px 0;
         }
 
         .qr-code img {
@@ -104,6 +104,11 @@
                 <td class="bold">Nota</td>
                 <td>:</td>
                 <td>{{ $nomor_struk }}</td>
+            </tr>
+            <tr>
+                <td class="bold">Jenis Pesanan</td>
+                <td>:</td>
+                <td>{{ $pembelian-> $jenisPesanan === 'dine-in' ? 'Dine In' : ($jenisPesanan === 'take-away' ? 'Take Away' : $jenisPesanan) }}</td>
             </tr>
             <tr>
                 <td class="bold">Customer</td>
